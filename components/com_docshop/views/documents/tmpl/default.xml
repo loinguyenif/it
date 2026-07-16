@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+    <layout title="COM_DOCSHOP_DOCUMENTS_VIEW_DEFAULT_TITLE" option="COM_DOCSHOP_DOCUMENTS_VIEW_DEFAULT_OPTION">
+        <help key="JHELP_MENUS_MENU_ITEM_DOCUMENTS" />
+        <message><![CDATA[COM_DOCSHOP_DOCUMENTS_VIEW_DEFAULT_DESC]]></message>
+    </layout>
+
+    <fields name="params">
+        <fieldset name="basic">
+            <field name="show_title" type="radio" default="1" label="COM_DOCSHOP_DOCUMENTS_SHOW_TITLE_LABEL" description="COM_DOCSHOP_DOCUMENTS_SHOW_TITLE_DESC">
+                <option value="1">JYES</option>
+                <option value="0">JNO</option>
+            </field>
+        </fieldset>
+    </fields>
+</metadata>

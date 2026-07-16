@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.9" type="template" client="site">
+    <name>filedownload</name>
+    <creationDate>July 2026</creationDate>
+    <author>Custom Build</author>
+    <copyright>Copyright (C) 2026. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later</license>
+    <version>1.0.0</version>
+    <description>FILEDOWNLOAD_TEMPLATE_DESCRIPTION</description>
+
+    <files>
+        <filename>index.php</filename>
+        <filename>component.php</filename>
+        <filename>error.php</filename>
+        <filename>templateDetails.xml</filename>
+        <filename>template_thumbnail.png</filename>
+        <folder>css</folder>
+        <folder>js</folder>
+        <folder>images</folder>
+        <folder>html</folder>
+        <folder>language</folder>
+    </files>
+
+    <languages folder="language">
+        <language tag="en-GB">en-GB/en-GB.tpl_filedownload.ini</language>
+        <language tag="en-GB">en-GB/en-GB.tpl_filedownload.sys.ini</language>
+    </languages>
+
+    <positions>
+        <position>topbar</position>
+        <position>search</position>
+        <position>menu</position>
+        <position>sidebar-categories</position>
+        <position>sidebar-top</position>
+        <position>sidebar-promo</position>
+        <position>banner</position>
+        <position>breadcrumbs</position>
+        <position>content-top</position>
+        <position>content</position>
+        <position>content-bottom</position>
+        <position>footer-about</position>
+        <position>footer-links</position>
+        <position>footer-categories</position>
+        <position>footer-support</position>
+        <position>footer-newsletter</position>
+        <position>debug</position>
+    </positions>
+
+    <config>
+        <fields name="params">
+            <fieldset name="advanced">
+                <field
+                    name="templateColor"
+                    type="color"
+                    default="#1e3a8a"
+                    label="Primary Color"
+                    description="Main brand / accent color used across the template"
+                />
+                <field
+                    name="darkColor"
+                    type="color"
+                    default="#0b1739"
+                    label="Header / Footer Dark Color"
+                    description="Background color used for header and footer"
+                />
+                <field
+                    name="siteName"
+                    type="text"
+                    default="FileDownload"
+                    label="Site Name"
+                    description="Text shown next to the logo"
+                />
+                <field
+                    name="showHero"
+                    type="radio"
+                    default="1"
+                    label="Show Hero Banner"
+                    description="Show the big search hero banner on the homepage"
+                    class="btn-group btn-group-yesno"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field
+                    name="rowsPerPage"
+                    type="text"
+                    default="10"
+                    label="Files List — Rows Per Page (display only)"
+                    description="Used only as a display hint in the file listing header"
+                />
+            </fieldset>
+        </fields>
+    </config>
+</extension>

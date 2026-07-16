@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FileDownload — Template Preview</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="css/template.css">
+</head>
+<body class="fd-body">
+
+<header class="fd-header">
+  <div class="container">
+    <div class="d-flex align-items-center justify-content-between fd-header-row">
+      <a class="fd-logo d-flex align-items-center" href="#">
+        <i class="fas fa-cloud-download-alt fd-logo-icon"></i>
+        <span class="fd-logo-text">File<strong>Download</strong></span>
+      </a>
+
+      <div class="fd-header-search d-none d-lg-flex">
+        <form class="fd-search-form" onsubmit="return false;">
+          <input type="text" class="fd-search-input" placeholder="Search files...">
+          <button type="submit" class="fd-search-btn"><i class="fas fa-search"></i></button>
+        </form>
+      </div>
+
+      <nav class="fd-nav d-none d-lg-flex">
+        <ul>
+          <li><a href="#">Home</a></li>
+          <li><a href="#">Categories</a></li>
+          <li><a href="#">Top Files</a></li>
+          <li><a href="#">FAQ</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="fd-header-actions d-flex align-items-center">
+        <button class="fd-theme-toggle d-none d-md-inline-flex" type="button" id="fdThemeToggle"><i class="fas fa-moon"></i></button>
+        <a class="fd-login-link d-none d-md-inline-block" href="#">Login</a>
+        <a class="btn fd-btn-register d-none d-md-inline-block" href="#">Register</a>
+        <button class="fd-mobile-toggle d-lg-none" type="button" data-toggle="collapse" data-target="#fdMobileNav"><i class="fas fa-bars"></i></button>
+      </div>
+    </div>
+
+    <div class="collapse d-lg-none" id="fdMobileNav">
+      <nav class="fd-nav-mobile">
+        <ul>
+          <li><a href="#">Home</a></li>
+          <li><a href="#">Categories</a></li>
+          <li><a href="#">Top Files</a></li>
+          <li><a href="#">FAQ</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<div class="fd-main container">
+  <div class="row fd-main-row">
+
+    <aside class="col-lg-3 fd-sidebar">
+      <div class="fd-card fd-categories-card">
+        <div class="fd-card-title fd-categories-title"><i class="fas fa-th-large"></i> All Categories</div>
+        <div class="fd_list">
+          <ul>
+            <li><span><i class="fas fa-desktop"></i>Software</span><span class="fd-count">2456</span></li>
+            <li><span><i class="fas fa-file-alt"></i>Documents</span><span class="fd-count">1563</span></li>
+            <li><span><i class="fas fa-mobile-alt"></i>Mobile Apps</span><span class="fd-count">1876</span></li>
+            <li><span><i class="fas fa-gamepad"></i>Games</span><span class="fd-count">1322</span></li>
+            <li><span><i class="fas fa-edit"></i>Templates</span><span class="fd-count">2341</span></li>
+            <li><span><i class="fas fa-image"></i>Images</span><span class="fd-count">1345</span></li>
+            <li><span><i class="fas fa-video"></i>Videos</span><span class="fd-count">975</span></li>
+            <li><span><i class="fas fa-music"></i>Audio</span><span class="fd-count">872</span></li>
+            <li><span><i class="fas fa-th"></i>Other</span><span class="fd-count">1234</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="fd-card">
+        <h3 class="fd-card-heading">Top Downloads</h3>
+        <div class="fd_topdownloads">
+          <ul>
+            <li><span class="fd-rank">1</span><span class="fd-thumb"><i class="fas fa-window-maximize" style="color:#0ea5e9"></i></span><span class="fd-meta"><span class="fd-name">Windows 11 Pro</span><span class="fd-downloads">125,845 downloads</span></span></li>
+            <li><span class="fd-rank">2</span><span class="fd-thumb"><i class="fas fa-file-word" style="color:#ef4444"></i></span><span class="fd-meta"><span class="fd-name">Office 2021</span><span class="fd-downloads">98,754 downloads</span></span></li>
+            <li><span class="fd-rank">3</span><span class="fd-thumb"><i class="fas fa-image" style="color:#1e40af"></i></span><span class="fd-meta"><span class="fd-name">Photoshop 2024</span><span class="fd-downloads">76,541 downloads</span></span></li>
+            <li><span class="fd-rank">4</span><span class="fd-thumb"><i class="fab fa-chrome" style="color:#f59e0b"></i></span><span class="fd-meta"><span class="fd-name">Google Chrome</span><span class="fd-downloads">65,421 downloads</span></span></li>
+            <li><span class="fd-rank">5</span><span class="fd-thumb"><i class="fas fa-file-archive" style="color:#16a34a"></i></span><span class="fd-meta"><span class="fd-name">WinRAR 6.24</span><span class="fd-downloads">54,879 downloads</span></span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="fd-card fd-promo-card">
+        <div class="fd_promo">
+          <h4>Upload Your Files</h4>
+          <p>Share files with millions of users worldwide. Fast, secure &amp; easy.</p>
+          <a href="#" class="btn">Upload Now</a>
+        </div>
+      </div>
+    </aside>
+
+    <div class="col-lg-9 fd-content">
+
+      <div class="fd-hero">
+        <div class="fd-hero-text">
+          <h1>Download Files Fast &amp; Secure</h1>
+          <p>Find the latest software, apps, documents, games, and more.</p>
+          <form class="fd-hero-search" onsubmit="return false;">
+            <input type="text" placeholder="Search files...">
+            <button type="submit" class="btn fd-btn-primary">Search</button>
+          </form>
+        </div>
+        <div class="fd-hero-art">
+          <div class="fd-hero-window">
+            <div class="fd-hero-window-bar"><span></span><span></span><span></span></div>
+            <div class="fd-hero-window-body"><i class="fas fa-cloud-upload-alt"></i></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fd-listing-card">
+        <div class="fd-listing-head">
+          <h2>Latest Files</h2>
+          <div class="fd-filters">
+            <select><option>All Categories</option></select>
+            <select><option>All Platforms</option></select>
+            <select><option>Latest</option></select>
+          </div>
+        </div>
+
+        <table class="fd-table">
+          <thead>
+            <tr>
+              <th>#</th><th>File Name</th><th>Category</th><th>Version</th><th>Size</th><th>Uploaded</th><th>Downloads</th><th>Rating</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td><div class="fd-file-name"><span class="fd-file-icon"><i class="fab fa-windows"></i></span>Windows 11 Pro ISO</div></td>
+              <td>Software</td><td>23H2</td><td>5.12 GB</td><td>Jul 10, 2024</td><td>125,845</td>
+              <td><span class="fd-stars">★★★★★<span class="fd-rating-num">4.8</span></span></td>
+              <td><a href="#" class="fd-btn-download"><i class="fas fa-download"></i>Download</a></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td><div class="fd-file-name"><span class="fd-file-icon"><i class="fas fa-file-word" style="color:#ef4444"></i></span>Microsoft Office 2021</div></td>
+              <td>Software</td><td>2021</td><td>2.35 GB</td><td>Jul 09, 2024</td><td>98,754</td>
+              <td><span class="fd-stars">★★★★☆<span class="fd-rating-num">4.7</span></span></td>
+              <td><a href="#" class="fd-btn-download"><i class="fas fa-download"></i>Download</a></td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td><div class="fd-file-name"><span class="fd-file-icon"><i class="fas fa-image" style="color:#1e40af"></i></span>Adobe Photoshop 2024</div></td>
+              <td>Software</td><td>25.7</td><td>3.21 GB</td><td>Jul 08, 2024</td><td>76,541</td>
+              <td><span class="fd-stars">★★★★☆<span class="fd-rating-num">4.6</span></span></td>
+              <td><a href="#" class="fd-btn-download"><i class="fas fa-download"></i>Download</a></td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td><div class="fd-file-name"><span class="fd-file-icon"><i class="fab fa-chrome" style="color:#f59e0b"></i></span>Google Chrome</div></td>
+              <td>Software</td><td>126.0.6478.182</td><td>98.5 MB</td><td>Jul 08, 2024</td><td>65,421</td>
+              <td><span class="fd-stars">★★★★☆<span class="fd-rating-num">4.5</span></span></td>
+              <td><a href="#" class="fd-btn-download"><i class="fas fa-download"></i>Download</a></td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td><div class="fd-file-name"><span class="fd-file-icon"><i class="fas fa-file-archive" style="color:#16a34a"></i></span>WinRAR 6.24</div></td>
+              <td>Software</td><td>6.24</td><td>7.1 MB</td><td>Jul 07, 2024</td><td>54,879</td>
+              <td><span class="fd-stars">★★★★☆<span class="fd-rating-num">4.6</span></span></td>
+              <td><a href="#" class="fd-btn-download"><i class="fas fa-download"></i>Download</a></td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td><div class="fd-file-name"><span class="fd-file-icon"><i class="fas fa-file-pdf" style="color:#dc2626"></i></span>Complete JavaScript Guide (PDF)</div></td>
+              <td>Documents</td><td>1.0</td><td>15.7 MB</td><td>Jul 06, 2024</td><td>43,256</td>
+              <td><span class="fd-stars">★★★★☆<span class="fd-rating-num">4.4</span></span></td>
+              <td><a href="#" class="fd-btn-download"><i class="fas fa-download"></i>Download</a></td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td><div class="fd-file-name"><span class="fd-file-icon"><i class="fab fa-whatsapp" style="color:#22c55e"></i></span>WhatsApp Messenger APK</div></td>
+              <td>Mobile Apps</td><td>2.24.14.76</td><td>56.8 MB</td><td>Jul 06, 2024</td><td>38,541</td>
+              <td><span class="fd-stars">★★★★☆<span class="fd-rating-num">4.3</span></span></td>
+              <td><a href="#" class="fd-btn-download"><i class="fas fa-download"></i>Download</a></td>
+            </tr>
+            <tr>
+              <td>8</td>
+              <td><div class="fd-file-name"><span class="fd-file-icon"><i class="fas fa-gamepad" style="color:#7c3aed"></i></span>GTA V - Premium Edition</div></td>
+              <td>Games</td><td>1.68</td><td>94.3 GB</td><td>Jul 05, 2024</td><td>28,745</td>
+              <td><span class="fd-stars">★★★★★<span class="fd-rating-num">4.7</span></span></td>
+              <td><a href="#" class="fd-btn-download"><i class="fas fa-download"></i>Download</a></td>
+            </tr>
+            <tr>
+              <td>9</td>
+              <td><div class="fd-file-name"><span class="fd-file-icon"><i class="fab fa-figma" style="color:#f43f5e"></i></span>Figma Desktop App</div></td>
+              <td>Software</td><td>124.3.2</td><td>88.4 MB</td><td>Jul 05, 2024</td><td>24,156</td>
+              <td><span class="fd-stars">★★★★☆<span class="fd-rating-num">4.5</span></span></td>
+              <td><a href="#" class="fd-btn-download"><i class="fas fa-download"></i>Download</a></td>
+            </tr>
+            <tr>
+              <td>10</td>
+              <td><div class="fd-file-name"><span class="fd-file-icon"><i class="fab fa-wordpress" style="color:#0ea5e9"></i></span>WordPress Theme - Astra</div></td>
+              <td>Templates</td><td>4.6.7</td><td>12.3 MB</td><td>Jul 04, 2024</td><td>22,984</td>
+              <td><span class="fd-stars">★★★★☆<span class="fd-rating-num">4.6</span></span></td>
+              <td><a href="#" class="fd-btn-download"><i class="fas fa-download"></i>Download</a></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="fd-listing-footer">
+          <span>Showing 1 to 10 of 1,256 files</span>
+          <div class="fd-pagination">
+            <a href="#">‹</a>
+            <span class="active">1</span>
+            <a href="#">2</a>
+            <a href="#">3</a>
+            <a href="#">4</a>
+            <a href="#">5</a>
+            <a href="#">…</a>
+            <a href="#">126</a>
+            <a href="#">›</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer class="fd-footer">
+  <div class="container">
+    <div class="row fd-footer-row">
+      <div class="col-lg-3 col-md-6 fd-footer-col">
+        <a class="fd-logo d-flex align-items-center mb-3" href="#">
+          <i class="fas fa-cloud-download-alt fd-logo-icon"></i>
+          <span class="fd-logo-text">File<strong>Download</strong></span>
+        </a>
+        <p class="fd-footer-about">Your trusted source for downloading files fast, securely, and for free.</p>
+        <div class="fd-social">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 fd-footer-col">
+        <h4>Quick Links</h4>
+        <ul class="fd_footerlist">
+          <li><a href="#">Home</a></li><li><a href="#">Categories</a></li><li><a href="#">Top Files</a></li><li><a href="#">FAQ</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-3 col-md-6 fd-footer-col">
+        <h4>Categories</h4>
+        <ul class="fd_footerlist">
+          <li><a href="#">Software</a></li><li><a href="#">Documents</a></li><li><a href="#">Mobile Apps</a></li><li><a href="#">Games</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-3 col-md-6 fd-footer-col">
+        <h4>Support</h4>
+        <ul class="fd_footerlist">
+          <li><a href="#">Help Center</a></li><li><a href="#">Terms of Service</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">DMCA</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="fd-newsletter-row">
+      <div class="fd-newsletter-text">
+        <h4>Subscribe to Newsletter</h4>
+        <p>Get the latest updates and new files in your inbox.</p>
+      </div>
+      <div class="fd_newsletter">
+        <form onsubmit="return false;">
+          <input type="email" placeholder="Enter your email">
+          <button type="submit">Subscribe</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="fd-footer-bottom d-flex align-items-center justify-content-between flex-wrap">
+      <p class="mb-0">&copy; 2024 FileDownload. All rights reserved.</p>
+      <div class="fd-lang-switch"><i class="fas fa-globe"></i> English</div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/template.js"></script>
+</body>
+</html>

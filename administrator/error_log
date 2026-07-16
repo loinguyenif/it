@@ -1,0 +1,5 @@
+[20-Apr-2026 08:30:46 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/itvni/public_html/libraries/joomla/database/driver.php on line 1925
+[20-Apr-2026 08:30:49 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/itvni/public_html/libraries/joomla/database/driver.php on line 1925
+[20-Apr-2026 08:30:52 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/itvni/public_html/libraries/joomla/database/driver.php on line 1925
+[20-Apr-2026 08:30:56 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/itvni/public_html/libraries/joomla/database/driver.php on line 1925
+[15-Jul-2026 03:33:56 UTC] PHP Warning:  hash_file(/home/itvni/public_html/tmp/Joomla_3.10.12-Stable-Update_Package.zip): failed to open stream: No such file or directory in /home/itvnicloud/public_html/administrator/components/com_joomlaupdate/models/default.php on line 418

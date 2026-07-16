@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" version="3.0" method="upgrade">
+    <name>COM_DOCSHOP</name>
+    <author>Your Name</author>
+    <creationDate>2026-04-11</creationDate>
+    <copyright>Copyright (c) 2026. All rights reserved.</copyright>
+    <license>GNU General Public License v3.0</license>
+    <authorEmail>your.email@example.com</authorEmail>
+    <authorUrl>https://yourwebsite.com</authorUrl>
+    <version>1.0.0</version>
+    <description>COM_DOCSHOP_DESCRIPTION</description>
+
+    <!-- Admin and Site files -->
+    <files folder="site">
+        <filename>docshop.php</filename>
+        <filename>controller.php</filename>
+        <filename>router.php</filename>
+        <folder>controllers</folder>
+        <folder>models</folder>
+        <folder>views</folder>
+        <folder>helpers</folder>
+    </files>
+
+    <administration>
+        <menu link="index.php?option=com_docshop&amp;view=dashboard">COM_DOCSHOP</menu>
+        
+        <submenu>
+            <menu link="index.php?option=com_docshop&amp;view=documents">COM_DOCSHOP_DOCUMENTS</menu>
+            <menu link="index.php?option=com_docshop&amp;view=categories">COM_DOCSHOP_CATEGORIES</menu>
+            <menu link="index.php?option=com_docshop&amp;view=platforms">COM_DOCSHOP_PLATFORMS</menu>
+            <menu link="index.php?option=com_docshop&amp;view=orders">COM_DOCSHOP_ORDERS</menu>
+        </submenu>
+
+        <files folder="admin">
+            <filename>docshop.php</filename>
+            <filename>controller.php</filename>
+            <filename>index.html</filename>
+            <folder>controllers</folder>
+            <folder>models</folder>
+            <folder>tables</folder>
+            <folder>views</folder>
+            <folder>helpers</folder>
+            <folder>sql</folder>
+            <filename>access.xml</filename>
+            <filename>config.xml</filename>
+        </files>
+
+        <languages folder="admin/language">
+            <language tag="en-GB">en-GB/en-GB.com_docshop.ini</language>
+            <language tag="en-GB">en-GB/en-GB.com_docshop.sys.ini</language>
+        </languages>
+    </administration>
+
+    <media destination="com_docshop" folder="media">
+        <folder>css</folder>
+    </media>
+
+    <languages folder="site/language">
+        <language tag="en-GB">en-GB/en-GB.com_docshop.ini</language>
+    </languages>
+
+    <scriptfile>script.php</scriptfile>
+
+    <!-- Database tables -->
+    <install>
+        <sql>
+            <file driver="mysql" charset="utf8mb4">sql/mysql/install.sql</file>
+        </sql>
+    </install>
+
+    <uninstall>
+        <sql>
+            <file driver="mysql" charset="utf8mb4">sql/mysql/uninstall.sql</file>
+        </sql>
+    </uninstall>
+
+    <update>
+        <schemas>
+            <schemapath type="mysql">sql/mysql</schemapath>
+        </schemas>
+    </update>
+
+    <!-- Configuration -->
+    <config>
+        <fields name="params">
+            <fieldset name="basic" label="COM_DOCSHOP_FIELDSET_BASIC">
+                <field name="paypal_mode" type="list" label="COM_DOCSHOP_PAYPAL_MODE" description="COM_DOCSHOP_PAYPAL_MODE_DESC" default="sandbox">
+                    <option value="sandbox">Sandbox</option>
+                    <option value="live">Live</option>
+                </field>
+                <field name="paypal_client_id" type="text" label="COM_DOCSHOP_PAYPAL_CLIENT_ID" description="COM_DOCSHOP_PAYPAL_CLIENT_ID_DESC" />
+                <field name="paypal_client_secret" type="password" label="COM_DOCSHOP_PAYPAL_CLIENT_SECRET" description="COM_DOCSHOP_PAYPAL_CLIENT_SECRET_DESC" />
+                <field name="store_currency" type="text" label="COM_DOCSHOP_CURRENCY" description="COM_DOCSHOP_CURRENCY_DESC" default="USD" />
+            </fieldset>
+        </fields>
+    </config>
+</extension>

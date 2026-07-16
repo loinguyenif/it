@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+    <fieldset name="component" label="COM_DOCSHOP_FIELDSET_BASIC">
+        <field name="paypal_mode" type="list" label="COM_DOCSHOP_PAYPAL_MODE" description="COM_DOCSHOP_PAYPAL_MODE_DESC" default="sandbox">
+            <option value="sandbox">Sandbox</option>
+            <option value="live">Live</option>
+        </field>
+        <field name="paypal_client_id" type="text" label="COM_DOCSHOP_PAYPAL_CLIENT_ID" description="COM_DOCSHOP_PAYPAL_CLIENT_ID_DESC" />
+        <field name="paypal_client_secret" type="password" label="COM_DOCSHOP_PAYPAL_CLIENT_SECRET" description="COM_DOCSHOP_PAYPAL_CLIENT_SECRET_DESC" />
+        <field name="store_currency" type="text" label="COM_DOCSHOP_CURRENCY" description="COM_DOCSHOP_CURRENCY_DESC" default="USD" />
+    </fieldset>
+</config>
