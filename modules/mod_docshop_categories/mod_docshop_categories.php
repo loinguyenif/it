@@ -11,7 +11,7 @@ defined('_JEXEC') or die;
 
 require_once __DIR__ . '/helper.php';
 
-$items       = ModTopDownloadsHelper::getItems($params);
+$items       = ModDocshopCategoriesHelper::getItems($params);
 $moduleclass = htmlspecialchars($params->get('moduleclass_sfx', ''));
 $suffix      = htmlspecialchars($params->get('downloads_suffix', 'downloads'));
 

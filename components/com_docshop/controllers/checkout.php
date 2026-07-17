@@ -25,8 +25,9 @@ class DocshopControllerCheckout extends JControllerLegacy
 
         $app = JFactory::getApplication();
 
-        $documentId = $app->input->getInt('document_id');
-        $params = $app->getParams('com_docshop');
+        $documentId   = $app->input->getInt('document_id');
+        $customAmount = $app->input->getFloat('custom_amount', 0);
+        $params       = $app->getParams('com_docshop');
 
         // Get document
         $docModel = $this->getModel('documents', 'DocshopModel');
@@ -34,6 +35,20 @@ class DocshopControllerCheckout extends JControllerLegacy
 
         if (!$document) {
             $app->redirect(JRoute::_('index.php?option=com_docshop&view=documents', false), 'Document not found', 'error');
+            return;
+        }
+
+        // Determine final amount:
+        // - If a custom_amount was submitted (donate page), use it
+        // - Otherwise fall back to the document's fixed price
+        if ($customAmount > 0) {
+            $finalAmount = round($customAmount, 2);
+        } else {
+            $finalAmount = (float) $document->price;
+        }
+
+        if ($finalAmount <= 0) {
+            $app->redirect(JRoute::_('index.php?option=com_docshop&view=documents', false), 'Invalid payment amount.', 'error');
             return;
         }
 
@@ -45,7 +60,7 @@ class DocshopControllerCheckout extends JControllerLegacy
         $payer->setPaymentMethod("paypal");
 
         $amount = new \PayPal\Api\Amount();
-        $amount->setTotal($document->price);
+        $amount->setTotal(number_format($finalAmount, 2, '.', ''));
         $amount->setCurrency($params->get('store_currency', 'USD'));
 
         $transaction = new \PayPal\Api\Transaction();

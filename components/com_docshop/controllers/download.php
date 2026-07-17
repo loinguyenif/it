@@ -48,9 +48,6 @@ class DocshopControllerDownload extends JControllerLegacy
             throw new \Exception('File not found', 404);
         }
 
-        // Update download count
-        $model->updateDownload($orderId);
-
         // Clear fallback session value after successful download initiation
         $session = JFactory::getSession();
         $session->clear('com_docshop.order_id');

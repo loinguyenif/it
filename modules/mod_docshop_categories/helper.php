@@ -10,7 +10,6 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Router\Route;
-use Joomla\Utilities\ArrayHelper;
 
 class ModDocshopCategoriesHelper
 {
@@ -19,28 +18,30 @@ class ModDocshopCategoriesHelper
         $db    = Factory::getDbo();
         $query = $db->getQuery(true);
 
-        $count      = (int) $params->get('count', 5);
-        $categories = $params->get('catid', array());
+        // Count documents per category using a subquery
+        $subQuery = $db->getQuery(true)
+            ->select(array(
+                $db->quoteName('d.category_id'),
+                'COUNT(' . $db->quoteName('d.id') . ') AS ' . $db->quoteName('doc_count'),
+            ))
+            ->from($db->quoteName('#__docshop_documents', 'd'))
+            ->where($db->quoteName('d.published') . ' = 1')
+            ->group($db->quoteName('d.category_id'));
 
-        $query->select(
-            array(
-                $db->quoteName('a.id'),
-                $db->quoteName('a.title'),
-                $db->quoteName('a.category_id'),
-                $db->quoteName('a.download_count')
+        $query->select(array(
+                $db->quoteName('c.id'),
+                $db->quoteName('c.title'),
+                $db->quoteName('c.alias'),
+                'COALESCE(' . $db->quoteName('sub.doc_count') . ', 0) AS ' . $db->quoteName('doc_count'),
+            ))
+            ->from($db->quoteName('#__docshop_categories', 'c'))
+            ->join(
+                'LEFT',
+                '(' . $subQuery . ') AS ' . $db->quoteName('sub') .
+                ' ON ' . $db->quoteName('sub.category_id') . ' = ' . $db->quoteName('c.id')
             )
-        )
-            ->from($db->quoteName('#__docshop_documents', 'a'))
-            ->where($db->quoteName('a.published') . ' = 1')
-            ->group($db->quoteName(array('a.id', 'a.title', 'a.category_id')));
-
-        if (!empty($categories) && is_array($categories)) {
-            $categories = ArrayHelper::toInteger($categories);
-            $query->whereIn($db->quoteName('a.category_id'), $categories);
-        }
-
-        $query->order('download_count DESC')
-            ->setLimit($count);
+            ->where($db->quoteName('c.published') . ' = 1')
+            ->order($db->quoteName('c.title') . ' ASC');
 
         $db->setQuery($query);
 
@@ -57,10 +58,10 @@ class ModDocshopCategoriesHelper
         $items = array();
         foreach ($rows as $row) {
             $items[] = (object) array(
-                'title'      => $row->title,
-                'hits'       => (int) $row->download_count,
-                'hits_fmt'   => number_format((int) $row->download_count),
-                'link'       => Route::_('index.php?option=com_docshop&view=documents&id=' . (int) $row->id),
+                'id'        => (int) $row->id,
+                'title'     => $row->title,
+                'doc_count' => (int) $row->doc_count,
+                'link'      => Route::_('index.php?option=com_docshop&view=documents&filter_category_id=' . (int) $row->id),
             );
         }
 

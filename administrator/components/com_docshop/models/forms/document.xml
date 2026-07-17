@@ -29,6 +29,14 @@
             cols="40"
         />
         <field
+            name="version"
+            type="text"
+            label="COM_DOCSHOP_FIELD_VERSION_LABEL"
+            description="COM_DOCSHOP_FIELD_VERSION_DESC"
+            size="20"
+            default=""
+        />
+        <field
             name="youtube_url"
             type="url"
             label="COM_DOCSHOP_FIELD_YOUTUBE_URL_LABEL"
@@ -45,13 +53,14 @@
             min="0"
         />
         <field
-            name="download_count"
+            name="view_count"
             type="number"
-            label="COM_DOCSHOP_FIELD_DOWNLOAD_COUNT_LABEL"
-            description="COM_DOCSHOP_FIELD_DOWNLOAD_COUNT_DESC"
+            label="COM_DOCSHOP_FIELD_VIEW_COUNT_LABEL"
+            description="COM_DOCSHOP_FIELD_VIEW_COUNT_DESC"
             min="0"
             step="1"
             default="0"
+            readonly="true"
         />
         <field
             name="category_id"

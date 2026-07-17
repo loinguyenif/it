@@ -32,7 +32,7 @@ class DocshopModelDocuments extends JModelList
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $query->select(array('a.id', 'a.title', 'a.description', 'a.youtube_url', 'a.price', 'a.category_id', 'a.platform_id', 'a.download_count', 'a.published', 'a.created', 'a.file_size', 'c.title as category_title', 'p.title as platform_title'))
+        $query->select(array('a.id', 'a.title', 'a.description', 'a.youtube_url', 'a.version', 'a.price', 'a.category_id', 'a.platform_id', 'a.view_count', 'a.published', 'a.created', 'a.file_size', 'c.title as category_title', 'p.title as platform_title'))
             ->from($db->quoteName('#__docshop_documents', 'a'))
             ->join('LEFT', $db->quoteName('#__docshop_categories', 'c') . ' ON ' . $db->quoteName('a.category_id') . ' = ' . $db->quoteName('c.id'))
             ->join('LEFT', $db->quoteName('#__docshop_platforms', 'p') . ' ON ' . $db->quoteName('a.platform_id') . ' = ' . $db->quoteName('p.id'))
@@ -69,7 +69,7 @@ class DocshopModelDocuments extends JModelList
     {
         $app = JFactory::getApplication();
 
-        $this->setState('filter.search', $app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search', '', 'string'));
+        $this->setState('filter.search', $app->getUserStateFromRequest($this->context . '.filter.search', 'searchword_document', '', 'string'));
         $this->setState('filter.category_id', $app->getUserStateFromRequest($this->context . '.filter.category_id', 'filter_category_id', '', 'int'));
         $this->setState('filter.platform_id', $app->getUserStateFromRequest($this->context . '.filter.platform_id', 'filter_platform_id', '', 'int'));
 

@@ -9,19 +9,42 @@ JHtml::_('bootstrap.modal');
 ?>
 <div class="fd-listing-card">
     <div class="fd-listing-head">
-        <h2>Latest Files</h2>
+        <?php
+            // Resolve heading: show active category name, or platform name, or fallback
+            $headingLabel = '';
+            $activeCatId  = (int) $this->state->get('filter.category_id');
+            if ($activeCatId > 0) {
+                foreach ($this->categories as $cat) {
+                    if ((int) $cat->value === $activeCatId) {
+                        $headingLabel = htmlspecialchars($cat->text);
+                        break;
+                    }
+                }
+            }
+            if (!$headingLabel) {
+                $activePlatId = (int) $this->state->get('filter.platform_id');
+                if ($activePlatId > 0) {
+                    foreach ($this->platforms as $plt) {
+                        if ((int) $plt->value === $activePlatId) {
+                            $headingLabel = htmlspecialchars($plt->text);
+                            break;
+                        }
+                    }
+                }
+            }
+            if (!$headingLabel) {
+                $headingLabel = 'Latest Files';
+            }
+        ?>
+        <h2><?php echo $headingLabel; ?></h2>
         <form method="get" action="<?php echo Route::_('index.php?option=com_docshop&view=documents'); ?>" class="fd-filters" id="fd-docshop-filters">
             <input type="hidden" name="option" value="com_docshop" />
             <input type="hidden" name="view" value="documents" />
             <input type="hidden" name="filter_order" value="a.created" />
-            <select name="filter_category_id" onchange="this.form.submit()">
-                <option value="0" <?php echo (int) $this->state->get('filter.category_id') === 0 ? 'selected' : ''; ?>>All Categories</option>
-                <?php foreach ($this->categories as $category) : ?>
-                    <option value="<?php echo (int) $category->value; ?>" <?php echo ((int) $this->state->get('filter.category_id') === (int) $category->value) ? 'selected' : ''; ?>>
-                        <?php echo htmlspecialchars($category->text); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
+            <div class="fd-search-form">
+                <input type="text" name="searchword_document" value="<?php echo htmlspecialchars($this->state->get('filter.search', ''), ENT_QUOTES, 'UTF-8'); ?>" placeholder="Search files...">
+                <button type="submit" class="fd-search-btn"><i class="fas fa-search"></i></button>
+            </div>
             <select name="filter_platform_id" onchange="this.form.submit()">
                 <option value="0" <?php echo (int) $this->state->get('filter.platform_id') === 0 ? 'selected' : ''; ?>>All Platforms</option>
                 <?php foreach ($this->platforms as $platform) : ?>
@@ -40,7 +63,7 @@ JHtml::_('bootstrap.modal');
     <table class="fd-table">
         <thead>
             <tr>
-                <th>#</th><th>File Name</th><th>Category</th><th>Size</th><th>Downloads</th><th>Price</th><th>Action</th>
+                <th>#</th><th>File Name</th><th>Category</th><th>Version</th><th>Size</th><th>Views</th><th>Price</th><th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -51,12 +74,15 @@ JHtml::_('bootstrap.modal');
               <td>
                 <div class="fd-file-name">
                   <span class="fd-file-icon"><i class="fas fa-file-archive"></i></span>
-                  <?php echo htmlspecialchars($item->title); ?>
+                  <a href="<?php echo JRoute::_('index.php?option=com_docshop&view=document&id=' . (int) $item->id); ?>">
+                    <?php echo htmlspecialchars($item->title); ?>
+                  </a>
                 </div>
               </td>
               <td><?php echo htmlspecialchars($item->category_title ?: 'Uncategorized'); ?></td>
+              <td><?php echo $item->version; ?></td>
               <td><?php echo htmlspecialchars(!empty($item->file_size) ? number_format($item->file_size / 1024, 2) . ' KB' : '0 KB'); ?></td>
-              <td><?php echo (int) $item->download_count; ?></td>
+              <td><?php echo (int) $item->view_count; ?></td>
               <td><?php echo '$' . number_format($item->price ?? 0, 2); ?></td>
               <td>
                     <form method="post" action="<?php echo Route::_('index.php?option=com_docshop&task=checkout.processPayment'); ?>" style="display:inline-block;margin:0;">
