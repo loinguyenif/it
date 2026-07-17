@@ -13,10 +13,10 @@ class JConfig {
 	public $debug_lang = '0';
 	public $debug_lang_const = '1';
 	public $dbtype = 'mysqli';
-	public $host = '112.213.89.102';
-	public $user = 'itvnicloud_nducloi89';
-	public $password = '!R[I-fckHmJf';
-	public $db = 'itvnicloud_joomla';
+	public $host = 'localhost';
+	public $user = 'root';
+	public $password = 'root';
+	public $db = 'teg_itvni';
 	public $dbprefix = 'x9dib_';
 	public $live_site = '';
 	public $secret = '24hN1DNFGU1szoCa';

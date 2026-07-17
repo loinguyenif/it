@@ -19,6 +19,7 @@ class DocshopModelDocuments extends JModelList
                 'category_id',
                 'platform_id',
                 'price',
+                'download_count',
                 'published',
                 'created',
                 'created_by'
@@ -33,7 +34,7 @@ class DocshopModelDocuments extends JModelList
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $query->select(array('a.id', 'a.title', 'a.price', 'a.category_id', 'a.platform_id', 'p.title AS platform_title', 'a.published', 'a.created', 'a.created_by', 'a.file_size'))
+        $query->select(array('a.id', 'a.title', 'a.price', 'a.category_id', 'a.platform_id', 'a.download_count', 'p.title AS platform_title', 'a.published', 'a.created', 'a.created_by', 'a.file_size'))
             ->from($db->quoteName('#__docshop_documents', 'a'))
             ->join('LEFT', $db->quoteName('#__docshop_platforms', 'p') . ' ON ' . $db->quoteName('a.platform_id') . ' = ' . $db->quoteName('p.id'));
 

@@ -468,7 +468,7 @@ ul { list-style: none; margin: 0; padding: 0; }
   padding-top: 12px;
 }
 .fd-lang-switch{ display: flex; align-items: center; gap: 6px; }
-
+.fd-footer-separator{ border-color: #1c2957;}
 /* ---------------- Responsive ---------------- */
 @media (max-width: 991.98px){
   .fd-sidebar{ padding-right: 15px; margin-bottom: 20px; }

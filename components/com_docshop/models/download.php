@@ -38,13 +38,27 @@ class DocshopModelDownload extends JModelLegacy
     public function updateDownload($orderId)
     {
         $db = $this->getDbo();
-        $query = $db->getQuery(true)
+        $order = $this->getOrder($orderId);
+
+        if (!$order) {
+            return;
+        }
+
+        $documentQuery = $db->getQuery(true)
+            ->update($db->quoteName('#__docshop_documents'))
+            ->set($db->quoteName('download_count') . ' = ' . $db->quoteName('download_count') . ' + 1')
+            ->where($db->quoteName('id') . ' = ' . (int) $order->document_id);
+
+        $db->setQuery($documentQuery);
+        $db->execute();
+
+        $orderQuery = $db->getQuery(true)
             ->update($db->quoteName('#__docshop_orders'))
             ->set($db->quoteName('download_count') . ' = ' . $db->quoteName('download_count') . ' + 1')
             ->set($db->quoteName('last_download') . ' = ' . $db->quote(JFactory::getDate()->toSql()))
-            ->where($db->quoteName('id') . ' = ' . (int)$orderId);
+            ->where($db->quoteName('id') . ' = ' . (int) $orderId);
 
-        $db->setQuery($query);
+        $db->setQuery($orderQuery);
         $db->execute();
     }
 }

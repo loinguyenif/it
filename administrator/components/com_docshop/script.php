@@ -79,5 +79,19 @@ class com_docshopInstallerScript
             );
             $db->execute();
         }
+
+        if (!isset($columns['download_count'])) {
+            $db->setQuery(
+                'ALTER TABLE ' . $db->quoteName('#__docshop_documents') .
+                ' ADD COLUMN ' . $db->quoteName('download_count') . ' INT(11) NOT NULL DEFAULT 0 AFTER ' . $db->quoteName('platform_id')
+            );
+            $db->execute();
+        } else {
+            $db->setQuery(
+                'ALTER TABLE ' . $db->quoteName('#__docshop_documents') .
+                ' MODIFY ' . $db->quoteName('download_count') . ' INT(11) NOT NULL DEFAULT 0'
+            );
+            $db->execute();
+        }
     }
 }

@@ -40,7 +40,7 @@ JHtml::_('bootstrap.modal');
     <table class="fd-table">
         <thead>
             <tr>
-                <th>#</th><th>File Name</th><th>Category</th><th>Size</th><th>Price</th><th>Action</th>
+                <th>#</th><th>File Name</th><th>Category</th><th>Size</th><th>Downloads</th><th>Price</th><th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -50,12 +50,13 @@ JHtml::_('bootstrap.modal');
               <td><?php echo (int) $rowIndex++; ?></td>
               <td>
                 <div class="fd-file-name">
-                  <span class="fd-file-icon"><i class="fab fa-windows"></i></span>
+                  <span class="fd-file-icon"><i class="fas fa-file-archive"></i></span>
                   <?php echo htmlspecialchars($item->title); ?>
                 </div>
               </td>
               <td><?php echo htmlspecialchars($item->category_title ?: 'Uncategorized'); ?></td>
               <td><?php echo htmlspecialchars(!empty($item->file_size) ? number_format($item->file_size / 1024, 2) . ' KB' : '0 KB'); ?></td>
+              <td><?php echo (int) $item->download_count; ?></td>
               <td><?php echo '$' . number_format($item->price ?? 0, 2); ?></td>
               <td>
                     <form method="post" action="<?php echo Route::_('index.php?option=com_docshop&task=checkout.processPayment'); ?>" style="display:inline-block;margin:0;">

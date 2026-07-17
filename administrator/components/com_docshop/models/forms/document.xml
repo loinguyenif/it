@@ -45,6 +45,15 @@
             min="0"
         />
         <field
+            name="download_count"
+            type="number"
+            label="COM_DOCSHOP_FIELD_DOWNLOAD_COUNT_LABEL"
+            description="COM_DOCSHOP_FIELD_DOWNLOAD_COUNT_DESC"
+            min="0"
+            step="1"
+            default="0"
+        />
+        <field
             name="category_id"
             type="sql"
             label="COM_DOCSHOP_FIELD_CATEGORY_LABEL"

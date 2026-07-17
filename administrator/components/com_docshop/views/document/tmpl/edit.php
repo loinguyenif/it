@@ -31,6 +31,7 @@ $input = $app->input;
                         <?php echo $this->form->renderField('description'); ?>
                         <?php echo $this->form->renderField('youtube_url'); ?>
                         <?php echo $this->form->renderField('price'); ?>
+                        <?php echo $this->form->renderField('download_count'); ?>
                         <?php echo $this->form->renderField('category_id'); ?>
                     </div>
                     <div class="span6">

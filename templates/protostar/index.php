@@ -211,7 +211,7 @@ $doc->addStyleDeclaration($inlineCss);
             </div>
             <jdoc:include type="modules" name="footer-newsletter" style="fd_newsletter" />
         </div-->
-
+        <hr class="fd-footer-separator" />
         <div class="fd-footer-bottom d-flex align-items-center justify-content-between flex-wrap">
             <p class="mb-0">&copy; <?php echo date('Y'); ?> FileDownload. All rights reserved.</p>
             <div class="fd-lang-switch">

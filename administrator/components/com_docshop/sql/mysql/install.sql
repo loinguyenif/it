@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS `#__docshop_documents` (
     `price` DECIMAL(10, 2) NOT NULL,
     `category_id` INT(11),
     `platform_id` INT(11) NULL,
+    `download_count` INT(11) DEFAULT 0,
     `published` TINYINT(3) DEFAULT 1,
     `access` INT(11) DEFAULT 1,
     `created` DATETIME DEFAULT CURRENT_TIMESTAMP,
