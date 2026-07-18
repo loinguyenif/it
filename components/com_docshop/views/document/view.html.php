@@ -35,17 +35,18 @@ class DocshopViewDocument extends JViewLegacy
             return;
         }
 
-        // Increment view_count — raw UPDATE, no model save (avoids modifying modified/modified_by)
-        $db = JFactory::getDbo();
-        $db->setQuery(
-            'UPDATE ' . $db->quoteName('#__docshop_documents') .
-            ' SET ' . $db->quoteName('view_count') . ' = ' . $db->quoteName('view_count') . ' + 1' .
-            ' WHERE ' . $db->quoteName('id') . ' = ' . (int) $id
-        );
-        $db->execute();
-
-        // Re-read updated view_count into item so the template shows the fresh value
-        $this->item->view_count = (int) $this->item->view_count + 1;
+        // Increment view_count only on the default detail layout, not donate/other layouts
+        $layout = $input->getCmd('layout', 'default');
+        if ($layout === 'default' || $layout === '') {
+            $db = JFactory::getDbo();
+            $db->setQuery(
+                'UPDATE ' . $db->quoteName('#__docshop_documents') .
+                ' SET ' . $db->quoteName('view_count') . ' = ' . $db->quoteName('view_count') . ' + 1' .
+                ' WHERE ' . $db->quoteName('id') . ' = ' . (int) $id
+            );
+            $db->execute();
+            $this->item->view_count = (int) $this->item->view_count + 1;
+        }
 
         // Load category & platform titles if not already joined
         $db = JFactory::getDbo();

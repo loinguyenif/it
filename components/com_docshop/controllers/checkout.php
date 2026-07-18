@@ -30,7 +30,8 @@ class DocshopControllerCheckout extends JControllerLegacy
         $params       = $app->getParams('com_docshop');
 
         // Get document
-        $docModel = $this->getModel('documents', 'DocshopModel');
+        JModelLegacy::addIncludePath(JPATH_COMPONENT_SITE . '/models');
+        $docModel = JModelLegacy::getInstance('Documents', 'DocshopModel');
         $document = $docModel->getItem($documentId);
 
         if (!$document) {

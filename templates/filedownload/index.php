@@ -76,7 +76,7 @@ $doc->addStyleDeclaration($inlineCss);
                     </a>
                     <a class="btn fd-btn-register d-none d-md-inline-block" href="<?php echo JRoute::_('index.php?option=com_users&task=user.logout&' . JSession::getFormToken() . '=1'); ?>">Logout</a>
                 <?php endif; */ ?>
-                <a class="btn fd-btn-register d-none d-md-inline-block" href="<?php echo JRoute::_('index.php?option=com_docshop&view=document&layout=donate&id=1'); ?>">Donate</a>
+                <a class="btn fd-btn-register d-none d-md-inline-block" href="<?php echo JRoute::_('index.php?option=com_docshop&view=document&layout=donate&id=1&Itemid=243'); ?>">Donate</a>
 
                 <button class="fd-mobile-toggle d-lg-none" type="button" data-toggle="collapse" data-target="#fdMobileNav" aria-label="Menu">
                     <i class="fas fa-bars"></i>
@@ -140,10 +140,6 @@ $doc->addStyleDeclaration($inlineCss);
             <?php endif; ?>
 
             <jdoc:include type="modules" name="banner" style="none" />
-
-            <div class="fd-breadcrumbs">
-                <jdoc:include type="modules" name="breadcrumbs" style="none" />
-            </div>
 
             <jdoc:include type="modules" name="content-top" style="fd_plain" />
 
