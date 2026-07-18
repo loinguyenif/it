@@ -60,6 +60,9 @@ class DocshopModelCheckout extends JModelLegacy
         // ---- Build INSERT using individual bindings for correct typing ----
         $orderNumber = 'ORD-' . strtoupper(substr(md5(uniqid(mt_rand(), true)), 0, 10));
 
+        // user_id = 0 when guest checkout — allowed
+        $userId = JFactory::getUser()->id;
+
         $query = $db->getQuery(true)
             ->insert($db->quoteName('#__docshop_orders'))
             ->columns($db->quoteName(array(
@@ -68,7 +71,7 @@ class DocshopModelCheckout extends JModelLegacy
                 'status', 'payment_method', 'created',
             )))
             ->values(implode(',', array(
-                (int)    $user->id,
+                (int)    $userId,
                 (int)    $documentId,
                 $db->quote($orderNumber),
                 $db->quote($paypalTransactionId),

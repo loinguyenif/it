@@ -160,11 +160,18 @@ class DocshopControllerCheckout extends JControllerLegacy
 
         $apiContext = new \PayPal\Rest\ApiContext(new \PayPal\Auth\OAuthTokenCredential($clientId, $clientSecret));
         $apiContext->setConfig(array(
-            'mode' => $mode === 'sandbox' ? 'sandbox' : 'live',
+            'mode'                   => $mode === 'sandbox' ? 'sandbox' : 'live',
             'http.ConnectionTimeOut' => 30,
-            'log.LogEnabled' => true,
-            'log.FileName' => JPATH_ROOT . '/logs/paypal.log',
-            'log.LogLevel' => 'DEBUG',
+            'http.Retry'             => 1,
+            // Explicit CA bundle — required on Windows/WampServer where the
+            // system cert store is not used by PHP curl by default
+            'http.CURLOPT_SSLVERSION'        => 'CURL_SSLVERSION_TLSv1_2',
+            'http.CURLOPT_SSL_VERIFYPEER'    => true,
+            'http.CURLOPT_CAINFO'            => str_replace('\\', '/', ini_get('curl.cainfo'))
+                ?: str_replace('\\', '/', JPATH_ROOT . '/libraries/vendor/paypal/rest-api-sdk-php/lib/PayPal/cacert.pem'),
+            'log.LogEnabled'  => true,
+            'log.FileName'    => JPATH_ROOT . '/logs/paypal.log',
+            'log.LogLevel'    => 'INFO',
         ));
 
         return $apiContext;

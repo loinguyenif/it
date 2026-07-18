@@ -61,7 +61,6 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                     </th>
                     <th><?php echo JHtml::_('grid.sort', 'COM_DOCSHOP_HEADING_TITLE', 'a.title', $listDirn, $listOrder); ?></th>
                     <th width="10%"><?php echo JHtml::_('grid.sort', 'COM_DOCSHOP_HEADING_PRICE', 'a.price', $listDirn, $listOrder); ?></th>
-                    <th width="8%"><?php echo JHtml::_('grid.sort', 'COM_DOCSHOP_HEADING_DOWNLOAD_COUNT', 'a.download_count', $listDirn, $listOrder); ?></th>
                     <th width="5%"><?php echo JHtml::_('grid.sort', 'JSTATUS', 'a.published', $listDirn, $listOrder); ?></th>
                     <th width="10%"><?php echo JHtml::_('grid.sort', 'JDATE', 'a.created', $listDirn, $listOrder); ?></th>
                     <th width="1%" class="nowrap"><?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?></th>
@@ -80,9 +79,6 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                         </td>
                         <td class="center">
                             $<?php echo number_format($item->price, 2); ?>
-                        </td>
-                        <td class="center">
-                            <?php echo (int) $item->download_count; ?>
                         </td>
                         <td class="center">
                             <?php echo JHtml::_('jgrid.published', $item->published, $i, 'documents.', true, 'cb'); ?>

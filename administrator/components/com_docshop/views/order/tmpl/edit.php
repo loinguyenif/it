@@ -25,7 +25,6 @@ JHtml::_('behavior.formvalidation');
                     <?php echo $this->form->renderField('status'); ?>
                     <?php echo $this->form->renderField('amount'); ?>
                     <?php echo $this->form->renderField('currency'); ?>
-                    <?php echo $this->form->renderField('download_count'); ?>
                 </div>
                 <div class="span6">
                     <?php echo $this->form->renderField('paypal_transaction_id'); ?>

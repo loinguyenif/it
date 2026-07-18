@@ -20,18 +20,7 @@ class DocshopViewDownload extends JViewLegacy
 
     public function display($tpl = null)
     {
-        $app  = JFactory::getApplication();
-        $user = JFactory::getUser();
-
-        if ($user->guest) {
-            $app->redirect(
-                JRoute::_('index.php?option=com_users&view=login', false),
-                JText::_('COM_DOCSHOP_PLEASE_LOGIN'),
-                'warning'
-            );
-            return;
-        }
-
+        $app     = JFactory::getApplication();
         $orderId = $app->input->getInt('id', 0);
 
         if (!$orderId) {
@@ -52,7 +41,7 @@ class DocshopViewDownload extends JViewLegacy
 
         $order = $model->getOrder($orderId);
 
-        if (!$order || (int) $order->user_id !== (int) $user->id || $order->status !== 'completed') {
+        if (!$order || $order->status !== 'completed') {
             $app->redirect(
                 JRoute::_('index.php?option=com_docshop&view=documents', false),
                 JText::_('COM_DOCSHOP_DOWNLOAD_NOT_AUTHORIZED'),

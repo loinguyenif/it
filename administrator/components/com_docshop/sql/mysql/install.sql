@@ -35,7 +35,6 @@ CREATE TABLE IF NOT EXISTS `#__docshop_orders` (
     `payment_method` VARCHAR(50) DEFAULT 'paypal',
     `created` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `modified` DATETIME ON UPDATE CURRENT_TIMESTAMP,
-    `download_count` INT(11) DEFAULT 0,
     `last_download` DATETIME,
     INDEX `user_id` (`user_id`),
     INDEX `document_id` (`document_id`),

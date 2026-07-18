@@ -156,10 +156,6 @@ $colour = isset($statusColour[$item->status]) ? $statusColour[$item->status] : '
                         </span>
                     </span>
                 </div>
-                <div class="ds-row">
-                    <span class="ds-label"><?php echo JText::_('COM_DOCSHOP_DOWNLOAD_COUNT_LABEL'); ?></span>
-                    <span class="ds-value"><?php echo (int) $item->download_count; ?></span>
-                </div>
                 <?php if (!empty($item->last_download)) : ?>
                 <div class="ds-row">
                     <span class="ds-label"><?php echo JText::_('COM_DOCSHOP_LAST_DOWNLOAD'); ?></span>

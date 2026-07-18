@@ -52,16 +52,6 @@
         />
 
         <field
-            name="download_count"
-            type="number"
-            label="COM_DOCSHOP_DOWNLOAD_COUNT_LABEL"
-            description="COM_DOCSHOP_FIELD_ORDER_DL_COUNT_DESC"
-            min="0"
-            step="1"
-            default="0"
-        />
-
-        <field
             name="order_number"
             type="text"
             label="COM_DOCSHOP_ORDER_NUMBER"
