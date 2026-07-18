@@ -136,6 +136,10 @@ class DocshopControllerCheckout extends JControllerLegacy
             );
 
         } catch (Exception $ex) {
+            // Log full error for debugging
+            JLog::addLogger(array('text_file' => 'com_docshop.errors.php'), JLog::ALL, array('com_docshop'));
+            JLog::add('checkout.confirm() failed: ' . $ex->getMessage() . ' | Trace: ' . $ex->getTraceAsString(), JLog::ERROR, 'com_docshop');
+
             $app->redirect(
                 JRoute::_('index.php?option=com_docshop&view=documents', false),
                 'Payment confirmation failed: ' . $ex->getMessage(),

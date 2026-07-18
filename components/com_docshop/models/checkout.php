@@ -34,51 +34,71 @@ class DocshopModelCheckout extends JModelLegacy
     public function createOrder($documentId, $payment, $currency)
     {
         $user = JFactory::getUser();
-        $db = $this->getDbo();
+        $db   = $this->getDbo();
 
-        // Get transaction
+        // ---- Extract PayPal transaction data ----
         $transactions = $payment->getTransactions();
+        if (empty($transactions)) {
+            throw new Exception('PayPal payment has no transactions.');
+        }
+
         $transaction = $transactions[0];
-        $amount = $transaction->getAmount();
-        $total = $amount->getTotal();
+        $amountObj   = $transaction->getAmount();
+        $total       = $amountObj->getTotal();
 
-        // Get PayPal transaction ID
-        $relatedResources = $transaction->getRelatedResources();
-        $relatedResource = $relatedResources[0];
-        $sale = $relatedResource->getSale();
-        $paypalTransactionId = $sale->getId();
+        // getRelatedResources() may be null/empty on first execute response;
+        // fall back to an empty string rather than fatal-erroring
+        $paypalTransactionId = '';
+        $relatedResources    = $transaction->getRelatedResources();
+        if (!empty($relatedResources)) {
+            $sale = $relatedResources[0]->getSale();
+            if ($sale) {
+                $paypalTransactionId = (string) $sale->getId();
+            }
+        }
 
-        // Create order
-        $orderData = array(
-            'user_id' => $user->id,
-            'document_id' => $documentId,
-            'order_number' => uniqid('ORD-'),
-            'paypal_transaction_id' => $paypalTransactionId,
-            'amount' => $total,
-            'currency' => $currency,
-            'status' => 'completed',
-            'payment_method' => 'paypal',
-            'created' => JFactory::getDate()->toSql()
-        );
+        // ---- Build INSERT using individual bindings for correct typing ----
+        $orderNumber = 'ORD-' . strtoupper(substr(md5(uniqid(mt_rand(), true)), 0, 10));
 
         $query = $db->getQuery(true)
             ->insert($db->quoteName('#__docshop_orders'))
-            ->columns(array_keys($orderData))
-            ->values(implode(',', array_map(array($db, 'quote'), $orderData)));
+            ->columns($db->quoteName(array(
+                'user_id', 'document_id', 'order_number',
+                'paypal_transaction_id', 'amount', 'currency',
+                'status', 'payment_method', 'created',
+            )))
+            ->values(implode(',', array(
+                (int)    $user->id,
+                (int)    $documentId,
+                $db->quote($orderNumber),
+                $db->quote($paypalTransactionId),
+                $db->quote((string) $total),
+                $db->quote((string) $currency),
+                $db->quote('completed'),
+                $db->quote('paypal'),
+                $db->quote(JFactory::getDate()->toSql()),
+            )));
 
         $db->setQuery($query);
-        $db->execute();
 
-        $orderId = (int) $db->insertid();
-        if ($orderId === 0) {
-            $db->setQuery('SELECT LAST_INSERT_ID()');
-            $orderId = (int) $db->loadResult();
+        try {
+            $db->execute();
+        } catch (Exception $e) {
+            throw new Exception('Failed to save order: ' . $e->getMessage());
         }
 
-        $order = new \stdClass();
-        $order->id = $orderId;
-        $order->order_number = $orderData['order_number'];
-        $order->status = 'completed';
+        $orderId = (int) $db->insertid();
+
+        if ($orderId === 0) {
+            throw new Exception('Order INSERT succeeded but returned no ID.');
+        }
+
+        $order                = new \stdClass();
+        $order->id            = $orderId;
+        $order->order_number  = $orderNumber;
+        $order->status        = 'completed';
+        $order->amount        = $total;
+        $order->currency      = $currency;
 
         return $order;
     }
