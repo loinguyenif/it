@@ -1,0 +1,120 @@
+/* =====================================================
+   com_docshop — Admin Dashboard
+   Mirrors RSForm Pro dashboard-container styling
+   ===================================================== */
+
+#dashboard-left {
+    float: left;
+    width: 100%;
+    overflow: hidden;
+}
+
+.dashboard-container {
+    width: 100%;
+    overflow: hidden;
+}
+
+.dashboard-container::before,
+.dashboard-container::after {
+    display: table;
+    content: "";
+}
+
+.dashboard-container::after {
+    clear: both;
+}
+
+.dashboard-button {
+    min-width: 19%;
+    float: left;
+    margin: 1% 1% 0 0;
+}
+
+/* Use flex column so icon sits above title, same as RSForm */
+.dashboard-button > a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+    padding: 10px;
+    box-sizing: border-box;
+    color: #2d6ca2;
+}
+
+.dashboard-button:hover {
+    background-color: #2d6ca2;
+}
+
+.dashboard-button:hover > a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.dashboard-info {
+    color: #333;
+    display: block;
+    padding: 0;           /* padding moved to <a> so flex fills the full box */
+    background-color: #f0f0f0;
+    border: 1px solid #d8d8d8;
+    text-align: center;
+}
+
+/* Joomla 3 icomoon icons — force block + size */
+.dashboard-info i {
+    display: block;
+    font-size: 2.5rem;
+    line-height: 1;
+    margin-bottom: 8px;
+    width: 48px;
+    height: 48px;
+}
+
+.dashboard-title {
+    display: block;
+    font-size: 13px;
+    line-height: 1.3;
+    word-break: break-word;
+}
+
+/* Portrait tablet to landscape and desktop */
+@media (min-width: 768px) and (max-width: 979px) {
+    .dashboard-button {
+        float: none;
+        width: 90%;
+        margin: 1%;
+    }
+    #dashboard-left {
+        float: none;
+        width: 100%;
+    }
+}
+
+/* Landscape phone to portrait tablet */
+@media (max-width: 767px) {
+    .dashboard-button {
+        float: none;
+        width: 90%;
+        margin: 1%;
+    }
+    #dashboard-left {
+        float: none;
+        width: 100%;
+    }
+}
+
+/* Landscape phones and down */
+@media (max-width: 480px) {
+    .dashboard-button {
+        float: none;
+        width: 90%;
+        margin: 1%;
+    }
+    #dashboard-left {
+        float: none;
+        width: 100%;
+    }
+}

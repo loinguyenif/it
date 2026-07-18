@@ -33,7 +33,11 @@ $listDirn = $this->escape($this->state->get('list.direction'));
             <tbody>
                 <?php foreach ($this->items as $i => $item) : ?>
                     <tr class="row<?php echo $i % 2; ?>">
-                        <td><?php echo $this->escape($item->order_number); ?></td>
+                        <td>
+                            <a href="<?php echo JRoute::_('index.php?option=com_docshop&view=order&id=' . (int) $item->id); ?>">
+                                <?php echo $this->escape($item->order_number); ?>
+                            </a>
+                        </td>
                         <td><?php echo $this->escape($item->user_name); ?></td>
                         <td><?php echo $this->escape($item->document_title); ?></td>
                         <td>$<?php echo number_format($item->amount, 2); ?></td>

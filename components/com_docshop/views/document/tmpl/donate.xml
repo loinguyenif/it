@@ -4,20 +4,4 @@
         <help key="donate" />
         <message><![CDATA[donate]]></message>
     </layout>
-
-    <fields name="params">
-        <fieldset name="basic">
-            <field
-                name="show_title"
-                type="radio"
-                default="1"
-                label="COM_DOCSHOP_DOCUMENTS_SHOW_TITLE_LABEL"
-                description="COM_DOCSHOP_DOCUMENTS_SHOW_TITLE_DESC"
-                class="btn-group btn-group-yesno"
-            >
-                <option value="1">JYES</option>
-                <option value="0">JNO</option>
-            </field>
-        </fieldset>
-    </fields>
 </metadata>
