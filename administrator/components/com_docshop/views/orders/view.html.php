@@ -17,10 +17,13 @@ class DocshopViewOrders extends JViewLegacy
 
     public function display($tpl = null)
     {
-        $this->sidebar = JHtmlSidebar::render();
-        $this->items = $this->get('Items');
+        $this->sidebar    = JHtmlSidebar::render();
+        $this->items      = $this->get('Items');
         $this->pagination = $this->get('Pagination');
-        $this->state = $this->get('State');
+        $this->state      = $this->get('State');
+
+        JToolbarHelper::title(JText::_('COM_DOCSHOP_ORDERS'), 'cart');
+        JToolbarHelper::deleteList('JGLOBAL_CONFIRM_DELETE', 'orders.delete', 'JTOOLBAR_DELETE');
 
         if (count($errors = $this->get('Errors'))) {
             JError::raiseError(500, implode("\n", $errors));

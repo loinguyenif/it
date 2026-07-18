@@ -8,13 +8,22 @@
 
 defined('_JEXEC') or die;
 
-class DocshopControllerOrders extends JControllerAdmin
+class DocshopControllerOrder extends JControllerForm
 {
-    protected $text_prefix = 'COM_DOCSHOP';
-    protected $default_view = 'orders';
+    protected $default_view = 'order';
 
     public function getModel($name = 'Order', $prefix = 'DocshopModel', $config = array('ignore_request' => true))
     {
         return parent::getModel($name, $prefix, $config);
+    }
+
+    public function cancel($key = null)
+    {
+        parent::cancel($key);
+        $id = JFactory::getApplication()->input->getInt('id', 0);
+        $this->setRedirect(JRoute::_(
+            'index.php?option=com_docshop&view=order&id=' . $id, false
+        ));
+        return true;
     }
 }

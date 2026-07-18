@@ -93,7 +93,7 @@ $colour = isset($statusColour[$item->status]) ? $statusColour[$item->status] : '
 <div style="text-align:right; margin-bottom:14px;">
     <?php
     $invoiceUrl = JRoute::_(
-        'index.php?option=com_docshop&task=orders.invoice&id=' . (int) $item->id . '&format=raw',
+        'index.php?option=com_docshop&task=invoice.generate&id=' . (int) $item->id,
         false
     );
     ?>

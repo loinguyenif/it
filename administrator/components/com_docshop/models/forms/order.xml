@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset name="order">
+        <field name="id" type="hidden" />
+
+        <field
+            name="status"
+            type="list"
+            label="COM_DOCSHOP_STATUS"
+            description="COM_DOCSHOP_FIELD_ORDER_STATUS_DESC"
+            default="pending"
+        >
+            <option value="pending">COM_DOCSHOP_STATUS_PENDING</option>
+            <option value="completed">COM_DOCSHOP_STATUS_COMPLETED</option>
+            <option value="failed">COM_DOCSHOP_STATUS_FAILED</option>
+            <option value="refunded">COM_DOCSHOP_STATUS_REFUNDED</option>
+        </field>
+
+        <field
+            name="amount"
+            type="number"
+            label="COM_DOCSHOP_AMOUNT"
+            description="COM_DOCSHOP_FIELD_ORDER_AMOUNT_DESC"
+            step="0.01"
+            min="0"
+        />
+
+        <field
+            name="currency"
+            type="text"
+            label="COM_DOCSHOP_CURRENCY"
+            description="COM_DOCSHOP_FIELD_ORDER_CURRENCY_DESC"
+            default="USD"
+            size="5"
+        />
+
+        <field
+            name="payment_method"
+            type="text"
+            label="COM_DOCSHOP_PAYMENT_METHOD"
+            description="COM_DOCSHOP_FIELD_ORDER_PAYMENT_METHOD_DESC"
+            default="paypal"
+            readonly="true"
+        />
+
+        <field
+            name="paypal_transaction_id"
+            type="text"
+            label="COM_DOCSHOP_PAYPAL_TXN_ID"
+            description="COM_DOCSHOP_FIELD_ORDER_TXN_DESC"
+            size="60"
+        />
+
+        <field
+            name="download_count"
+            type="number"
+            label="COM_DOCSHOP_DOWNLOAD_COUNT_LABEL"
+            description="COM_DOCSHOP_FIELD_ORDER_DL_COUNT_DESC"
+            min="0"
+            step="1"
+            default="0"
+        />
+
+        <field
+            name="order_number"
+            type="text"
+            label="COM_DOCSHOP_ORDER_NUMBER"
+            description="COM_DOCSHOP_FIELD_ORDER_NUMBER_DESC"
+            readonly="true"
+            size="40"
+        />
+
+        <field
+            name="user_id"
+            type="user"
+            label="COM_DOCSHOP_USER"
+            description="COM_DOCSHOP_FIELD_ORDER_USER_DESC"
+            readonly="true"
+        />
+
+        <field
+            name="document_id"
+            type="sql"
+            label="COM_DOCSHOP_DOCUMENT"
+            description="COM_DOCSHOP_FIELD_ORDER_DOCUMENT_DESC"
+            query="SELECT id AS value, title AS text FROM #__docshop_documents ORDER BY title ASC"
+            key_field="value"
+            value_field="text"
+            readonly="true"
+        />
+
+        <field
+            name="created"
+            type="calendar"
+            label="COM_DOCSHOP_FIELD_ORDER_DATE_LABEL"
+            description=""
+            format="%Y-%m-%d %H:%M:%S"
+            filter="user_utc"
+            translateformat="true"
+            showtime="true"
+            readonly="true"
+        />
+    </fieldset>
+</form>

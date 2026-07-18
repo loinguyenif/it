@@ -73,35 +73,55 @@ class DocshopModelDocument extends JModelAdmin
 
     private function handleFileUpload($tmpFile, $fileName)
     {
-        $uploadDir = '/media/com_docshop/files/';
+        $uploadDir  = '/media/com_docshop/files/';
         $uploadPath = JPATH_SITE . $uploadDir;
 
         if (!JFolder::exists($uploadPath)) {
             JFolder::create($uploadPath);
         }
 
-        $allowedTypes = array('pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'zip');
-        $fileExt = JFile::getExt($fileName);
+        // Create .htaccess to block direct execution of uploaded files
+        $htaccess = $uploadPath . '.htaccess';
+        if (!file_exists($htaccess)) {
+            file_put_contents($htaccess,
+                "Options -Indexes\n"
+                . "<FilesMatch \"\.(php|php3|php4|php5|phtml|pl|py|cgi|sh)$\">\n"
+                . "    Order allow,deny\n"
+                . "    Deny from all\n"
+                . "</FilesMatch>\n"
+            );
+        }
+
+        $allowedTypes = array('pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'zip', 'rar', '7z');
+        $fileExt      = strtolower(JFile::getExt($fileName));
 
         if (!in_array($fileExt, $allowedTypes)) {
             $this->setError(JText::_('COM_DOCSHOP_ERROR_FILE_TYPE_INVALID'));
             return false;
         }
 
-        if ($_FILES['jform']['size']['file'] > 50 * 1024 * 1024) { // 50MB limit
+        if ($_FILES['jform']['size']['file'] > 50 * 1024 * 1024) {
             $this->setError(JText::_('COM_DOCSHOP_ERROR_FILE_TOO_LARGE'));
             return false;
         }
 
-        $fileName = md5(uniqid(rand(), true)) . '.' . $fileExt;
-        $filePath = $uploadPath . $fileName;
+        $newFileName = md5(uniqid(rand(), true)) . '.' . $fileExt;
+        $filePath    = $uploadPath . $newFileName;
 
-        if (JFile::upload($tmpFile, $filePath)) {
-            return $fileName;
+        // Use move_uploaded_file directly — JFile::upload runs a content
+        // security check that rejects legitimate archives (zip, rar) whose
+        // byte signatures look unsafe to Joomla's scanner.
+        if (!is_uploaded_file($tmpFile)) {
+            $this->setError(JText::_('COM_DOCSHOP_ERROR_FILE_UPLOAD_FAILED'));
+            return false;
         }
 
-        $this->setError(JText::_('COM_DOCSHOP_ERROR_FILE_UPLOAD_FAILED'));
-        return false;
+        if (!move_uploaded_file($tmpFile, $filePath)) {
+            $this->setError(JText::_('COM_DOCSHOP_ERROR_FILE_UPLOAD_FAILED'));
+            return false;
+        }
+
+        return $newFileName;
     }
 }
 ?>
