@@ -90,36 +90,51 @@ class DocshopControllerCheckout extends JControllerLegacy
 
     public function confirm()
     {
-        $app = JFactory::getApplication();
-        $paymentId = $app->input->get('paymentId');
-        $payerId = $app->input->get('PayerID');
+        $app        = JFactory::getApplication();
+        $paymentId  = $app->input->getString('paymentId');
+        $payerId    = $app->input->getString('PayerID');
         $documentId = $app->input->getInt('document_id');
 
-        $params = $app->getParams('com_docshop');
+        $params     = $app->getParams('com_docshop');
         $apiContext = $this->getApiContext($params);
 
         try {
-            $payment = \PayPal\Api\Payment::get($paymentId, $apiContext);
+            // Execute payment
+            $payment   = \PayPal\Api\Payment::get($paymentId, $apiContext);
             $execution = new \PayPal\Api\PaymentExecution();
             $execution->setPayerId($payerId);
+            $executedPayment = $payment->execute($execution, $apiContext);
 
-            $payment->execute($execution, $apiContext);
+            // Load checkout model directly — getModel() on a legacy controller
+            // does not search site component model paths automatically
+            JModelLegacy::addIncludePath(JPATH_COMPONENT . '/models');
+            $orderModel = JModelLegacy::getInstance('Checkout', 'DocshopModel');
 
-            // Get payment info
-            $payment = \PayPal\Api\Payment::get($paymentId, $apiContext);
+            if (!$orderModel) {
+                throw new Exception('Could not load checkout model.');
+            }
 
-            // Create order
-            $orderModel = $this->getModel('checkout', 'DocshopModel');
-            $order = $orderModel->createOrder($documentId, $payment, $params->get('store_currency', 'USD'));
+            $order = $orderModel->createOrder(
+                $documentId,
+                $executedPayment,
+                $params->get('store_currency', 'USD')
+            );
 
-            $session = JFactory::getSession();
-            $session->set('com_docshop.order_id', $order->id);
+            if (!$order || !$order->id) {
+                throw new Exception('Order could not be saved.');
+            }
 
+            // Store order id in session as fallback
+            JFactory::getSession()->set('com_docshop.order_id', $order->id);
+
+            // Redirect to success page — success page auto-triggers download
+            // and shows a 5-minute signed download link
             $app->redirect(
-                JRoute::_('index.php?option=com_docshop&task=download.download&id=' . $order->id, false),
-                'Payment successful! Your document is ready to download.',
+                JRoute::_('index.php?option=com_docshop&view=download&layout=success&id=' . (int) $order->id, false),
+                JText::_('COM_DOCSHOP_PAYMENT_SUCCESS'),
                 'success'
             );
+
         } catch (Exception $ex) {
             $app->redirect(
                 JRoute::_('index.php?option=com_docshop&view=documents', false),
