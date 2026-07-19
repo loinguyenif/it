@@ -12,46 +12,41 @@ class DocshopControllerDownload extends JControllerLegacy
 {
     /**
      * Show the "payment successful" page.
-     * JavaScript on the page auto-triggers the actual binary download via stream().
      */
     public function download()
     {
-        $app     = JFactory::getApplication();
-        $orderId = $app->input->getInt('id', 0);
+        $app         = JFactory::getApplication();
+        $orderNumber = $app->input->getString('order_number', '');
 
-        if (!$orderId) {
-            $session = JFactory::getSession();
-            $orderId = (int) $session->get('com_docshop.order_id', 0);
+        // Fallback: session stores the order_number after confirm()
+        if (empty($orderNumber)) {
+            $orderNumber = JFactory::getSession()->get('com_docshop.order_number', '');
         }
 
-        if (!$orderId) {
+        if (empty($orderNumber)) {
             $app->redirect(JRoute::_('index.php?option=com_docshop&view=documents', false), 'Order not found.', 'error');
             return;
         }
 
-        // Verify the order exists and is paid before showing the success page.
         $model = $this->getModel('download', 'DocshopModel');
-        $order = $model->getOrder($orderId);
+        $order = $model->getOrderByNumber($orderNumber);
 
         if (!$order || $order->status !== 'completed') {
             $app->redirect(JRoute::_('index.php?option=com_docshop&view=documents', false), 'Order not completed.', 'error');
             return;
         }
 
-        // Render the success page; JS on that page triggers stream().
         $view = $this->getView('download', 'html');
         $view->setModel($model, true);
         $view->display();
     }
 
     /**
-     * Stream the actual binary file — called directly via task=download.stream.
-     * Must bypass the entire Joomla render pipeline and send raw binary output.
+     * Stream the actual binary file — called via task=download.stream.
      */
     public function stream()
     {
-        // Close ALL output buffers immediately — before Joomla can write anything.
-        // This must be the very first thing we do so headers are not yet sent.
+        // Flush all output buffers before anything else.
         while (ob_get_level() > 0) {
             ob_end_clean();
         }
@@ -60,21 +55,20 @@ class DocshopControllerDownload extends JControllerLegacy
             apache_setenv('no-gzip', 1);
         }
 
-        $app     = JFactory::getApplication();
-        $orderId = $app->input->getInt('id', 0);
+        $app         = JFactory::getApplication();
+        $orderNumber = $app->input->getString('order_number', '');
 
-        if (!$orderId) {
-            $session = JFactory::getSession();
-            $orderId = (int) $session->get('com_docshop.order_id', 0);
+        if (empty($orderNumber)) {
+            $orderNumber = JFactory::getSession()->get('com_docshop.order_number', '');
         }
 
-        if (!$orderId) {
-            $app->redirect(JRoute::_('index.php?option=com_docshop&view=documents', false), 'Order ID missing.', 'error');
+        if (empty($orderNumber)) {
+            $app->redirect(JRoute::_('index.php?option=com_docshop&view=documents', false), 'Order not found.', 'error');
             return;
         }
 
         $model = $this->getModel('download', 'DocshopModel');
-        $order = $model->getOrder($orderId);
+        $order = $model->getOrderByNumber($orderNumber);
 
         if (!$order || $order->status !== 'completed') {
             $app->redirect(JRoute::_('index.php?option=com_docshop&view=documents', false), 'Order not found or not completed.', 'error');
@@ -104,11 +98,10 @@ class DocshopControllerDownload extends JControllerLegacy
             return;
         }
 
-        // Clear session fallback and atomically increment download_count.
-        JFactory::getSession()->clear('com_docshop.order_id');
-        $model->markDownloaded($orderId);
+        // Clear session and atomically increment download_count.
+        JFactory::getSession()->clear('com_docshop.order_number');
+        $model->markDownloaded($order->id);
 
-        // Send binary file directly — no Joomla template involved.
         $this->streamFile($filePath, $document->title);
     }
 

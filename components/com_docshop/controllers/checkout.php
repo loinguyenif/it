@@ -109,10 +109,10 @@ class DocshopControllerCheckout extends JControllerLegacy
 
         if ($existingOrder) {
             $session = JFactory::getSession();
-            $session->set('com_docshop.order_id', $existingOrder->id);
+            $session->set('com_docshop.order_number', $existingOrder->order_number);
 
             $app->redirect(
-                JRoute::_('index.php?option=com_docshop&view=download&id=' . $existingOrder->id, false),
+                JRoute::_('index.php?option=com_docshop&view=download&order_number=' . urlencode($existingOrder->order_number), false),
                 'Payment successful! Your document is ready to download.',
                 'success'
             );
@@ -134,10 +134,10 @@ class DocshopControllerCheckout extends JControllerLegacy
             $order = $orderModel->createOrder($documentId, $payment, $params->get('store_currency', 'USD'));
 
             $session = JFactory::getSession();
-            $session->set('com_docshop.order_id', $order->id);
+            $session->set('com_docshop.order_number', $order->order_number);
 
             $app->redirect(
-                JRoute::_('index.php?option=com_docshop&view=download&id=' . $order->id, false),
+                JRoute::_('index.php?option=com_docshop&view=download&order_number=' . urlencode($order->order_number), false),
                 'Payment successful! Your document is ready to download.',
                 'success'
             );
