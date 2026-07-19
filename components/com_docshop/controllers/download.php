@@ -56,7 +56,9 @@ class DocshopControllerDownload extends JControllerLegacy
             ob_end_clean();
         }
         @ini_set('zlib.output_compression', 'Off');
-        @apache_setenv('no-gzip', 1);
+        if (function_exists('apache_setenv')) {
+            apache_setenv('no-gzip', 1);
+        }
 
         $app     = JFactory::getApplication();
         $orderId = $app->input->getInt('id', 0);
@@ -119,20 +121,18 @@ class DocshopControllerDownload extends JControllerLegacy
 
         $contentType = isset($contentTypes[$ext]) ? $contentTypes[$ext] : 'application/octet-stream';
 
-        // Flush and close every output buffer opened by Joomla / PHP so that
-        // our binary headers are the very first bytes sent to the browser.
-        while (ob_get_level() > 0) {
-            ob_end_clean();
+        // Release session lock so the browser's parallel requests are not blocked.
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_write_close();
         }
 
-        // Prevent Joomla from appending any template HTML after we exit.
-        @apache_setenv('no-gzip', 1);
-        @ini_set('zlib.output_compression', 'Off');
-
-        // Safe filename: strip characters that break Content-Disposition on
-        // some browsers (quotes, backslashes, control chars).
+        // Safe filename: strip characters that break Content-Disposition.
         $safeFileName = preg_replace('/["\\\\\x00-\x1f]/', '', $fileName);
+        if ($safeFileName === '') {
+            $safeFileName = 'download';
+        }
 
+        header_remove(); // wipe any headers Joomla may have already queued
         header('Content-Type: ' . $contentType);
         header('Content-Disposition: attachment; filename="' . $safeFileName . '.' . $ext . '"');
         header('Content-Length: ' . $fileSize);
@@ -141,15 +141,15 @@ class DocshopControllerDownload extends JControllerLegacy
         header('Cache-Control: no-cache, no-store, must-revalidate');
         header('Expires: 0');
 
-        // Stream in chunks to support large files without hitting memory limits.
         $handle = fopen($filePath, 'rb');
         if ($handle === false) {
             http_response_code(500);
             exit('Could not open file for reading.');
         }
 
+        // Stream in 1 MB chunks — safe for large files without memory exhaustion.
         while (!feof($handle)) {
-            echo fread($handle, 1048576); // 1 MB chunks
+            echo fread($handle, 1048576);
             flush();
         }
 
