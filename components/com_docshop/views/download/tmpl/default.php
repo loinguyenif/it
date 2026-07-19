@@ -25,19 +25,3 @@ defined('_JEXEC') or die;
         <?php echo JText::_('You can also access your downloads from your order history.'); ?>
     </p>
 </div>
-
-<script>
-(function () {
-    // Auto-trigger download after a short delay to ensure the page has rendered.
-    var url = <?php echo json_encode($this->downloadUrl); ?>;
-    setTimeout(function () {
-        var a = document.createElement('a');
-        a.href = url;
-        a.download = '';           // hint browser to download, not navigate
-        a.style.display = 'none';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-    }, 800);
-}());
-</script>

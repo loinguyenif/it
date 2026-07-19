@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS `#__docshop_orders` (
     `created` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `modified` DATETIME ON UPDATE CURRENT_TIMESTAMP,
     `last_download` DATETIME,
+    `download_count` TINYINT UNSIGNED NOT NULL DEFAULT 0,
     UNIQUE KEY `uidx_paypal_payment_id` (`paypal_payment_id`),
     INDEX `user_id` (`user_id`),
     INDEX `document_id` (`document_id`),

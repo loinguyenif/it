@@ -69,23 +69,23 @@ class DocshopControllerDownload extends JControllerLegacy
         }
 
         if (!$orderId) {
-            http_response_code(400);
-            exit('Order ID missing.');
+            $app->redirect(JRoute::_('index.php?option=com_docshop&view=documents', false), 'Order ID missing.', 'error');
+            return;
         }
 
         $model = $this->getModel('download', 'DocshopModel');
         $order = $model->getOrder($orderId);
 
         if (!$order || $order->status !== 'completed') {
-            http_response_code(403);
-            exit('Order not found or not completed.');
+            $app->redirect(JRoute::_('index.php?option=com_docshop&view=documents', false), 'Order not found or not completed.', 'error');
+            return;
         }
 
         $document = $model->getDocument($order->document_id);
 
         if (!$document) {
-            http_response_code(404);
-            exit('Document not found.');
+            $app->redirect(JRoute::_('index.php?option=com_docshop&view=documents', false), 'Document not found.', 'error');
+            return;
         }
 
         $filePath = JPATH_SITE . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR
@@ -93,11 +93,18 @@ class DocshopControllerDownload extends JControllerLegacy
                   . $document->file;
 
         if (!file_exists($filePath)) {
-            http_response_code(404);
-            exit('File not found on server.');
+            $app->redirect(JRoute::_('index.php?option=com_docshop&view=documents', false), 'File not found on server.', 'error');
+            return;
         }
 
-        // Clear session fallback and record download time.
+        // Enforce 3-download limit per order.
+        $maxDownloads = 3;
+        if ((int) $order->download_count >= $maxDownloads) {
+            $app->redirect(JRoute::_('index.php?option=com_docshop&view=documents', false), 'Download limit reached. This order has already been downloaded ' . $maxDownloads . ' times.', 'warning');
+            return;
+        }
+
+        // Clear session fallback and atomically increment download_count.
         JFactory::getSession()->clear('com_docshop.order_id');
         $model->markDownloaded($orderId);
 
