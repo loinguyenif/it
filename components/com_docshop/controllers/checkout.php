@@ -91,55 +91,57 @@ class DocshopControllerCheckout extends JControllerLegacy
     public function confirm()
     {
         $app        = JFactory::getApplication();
-        $paymentId  = $app->input->getString('paymentId');
-        $payerId    = $app->input->getString('PayerID');
+        $paymentId  = $app->input->get('paymentId');
+        $payerId    = $app->input->get('PayerID');
         $documentId = $app->input->getInt('document_id');
 
+        if (empty($paymentId) || empty($payerId)) {
+            $app->redirect(JRoute::_('index.php?option=com_docshop&view=documents', false), 'Invalid payment response.', 'error');
+            return;
+        }
+
         $params     = $app->getParams('com_docshop');
+        $orderModel = $this->getModel('checkout', 'DocshopModel');
+
+        // Idempotency: if this paymentId was already processed, skip execution
+        // and go straight to the download — handles back-button / double-redirect.
+        $existingOrder = $orderModel->getOrderByPaymentId($paymentId);
+
+        if ($existingOrder) {
+            $session = JFactory::getSession();
+            $session->set('com_docshop.order_id', $existingOrder->id);
+
+            $app->redirect(
+                JRoute::_('index.php?option=com_docshop&view=download&id=' . $existingOrder->id, false),
+                'Payment successful! Your document is ready to download.',
+                'success'
+            );
+            return;
+        }
+
         $apiContext = $this->getApiContext($params);
 
         try {
-            // Execute payment
             $payment   = \PayPal\Api\Payment::get($paymentId, $apiContext);
             $execution = new \PayPal\Api\PaymentExecution();
             $execution->setPayerId($payerId);
-            $executedPayment = $payment->execute($execution, $apiContext);
 
-            // Load checkout model directly — getModel() on a legacy controller
-            // does not search site component model paths automatically
-            JModelLegacy::addIncludePath(JPATH_COMPONENT . '/models');
-            $orderModel = JModelLegacy::getInstance('Checkout', 'DocshopModel');
+            $payment->execute($execution, $apiContext);
 
-            if (!$orderModel) {
-                throw new Exception('Could not load checkout model.');
-            }
+            // Re-fetch to get populated relatedResources / sale ID
+            $payment = \PayPal\Api\Payment::get($paymentId, $apiContext);
 
-            $order = $orderModel->createOrder(
-                $documentId,
-                $executedPayment,
-                $params->get('store_currency', 'USD')
-            );
+            $order = $orderModel->createOrder($documentId, $payment, $params->get('store_currency', 'USD'));
 
-            if (!$order || !$order->id) {
-                throw new Exception('Order could not be saved.');
-            }
+            $session = JFactory::getSession();
+            $session->set('com_docshop.order_id', $order->id);
 
-            // Store order id in session as fallback
-            JFactory::getSession()->set('com_docshop.order_id', $order->id);
-
-            // Redirect to success page — success page auto-triggers download
-            // and shows a 5-minute signed download link
             $app->redirect(
-                JRoute::_('index.php?option=com_docshop&view=download&layout=success&id=' . (int) $order->id, false),
-                JText::_('COM_DOCSHOP_PAYMENT_SUCCESS'),
+                JRoute::_('index.php?option=com_docshop&view=download&id=' . $order->id, false),
+                'Payment successful! Your document is ready to download.',
                 'success'
             );
-
         } catch (Exception $ex) {
-            // Log full error for debugging
-            JLog::addLogger(array('text_file' => 'com_docshop.errors.php'), JLog::ALL, array('com_docshop'));
-            JLog::add('checkout.confirm() failed: ' . $ex->getMessage() . ' | Trace: ' . $ex->getTraceAsString(), JLog::ERROR, 'com_docshop');
-
             $app->redirect(
                 JRoute::_('index.php?option=com_docshop&view=documents', false),
                 'Payment confirmation failed: ' . $ex->getMessage(),
@@ -160,18 +162,11 @@ class DocshopControllerCheckout extends JControllerLegacy
 
         $apiContext = new \PayPal\Rest\ApiContext(new \PayPal\Auth\OAuthTokenCredential($clientId, $clientSecret));
         $apiContext->setConfig(array(
-            'mode'                   => $mode === 'sandbox' ? 'sandbox' : 'live',
+            'mode' => $mode === 'sandbox' ? 'sandbox' : 'live',
             'http.ConnectionTimeOut' => 30,
-            'http.Retry'             => 1,
-            // Explicit CA bundle — required on Windows/WampServer where the
-            // system cert store is not used by PHP curl by default
-            'http.CURLOPT_SSLVERSION'        => 'CURL_SSLVERSION_TLSv1_2',
-            'http.CURLOPT_SSL_VERIFYPEER'    => true,
-            'http.CURLOPT_CAINFO'            => str_replace('\\', '/', ini_get('curl.cainfo'))
-                ?: str_replace('\\', '/', JPATH_ROOT . '/libraries/vendor/paypal/rest-api-sdk-php/lib/PayPal/cacert.pem'),
-            'log.LogEnabled'  => true,
-            'log.FileName'    => JPATH_ROOT . '/logs/paypal.log',
-            'log.LogLevel'    => 'INFO',
+            'log.LogEnabled' => true,
+            'log.FileName' => JPATH_ROOT . '/logs/paypal.log',
+            'log.LogLevel' => 'DEBUG',
         ));
 
         return $apiContext;

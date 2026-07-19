@@ -140,10 +140,9 @@ $doc->addStyleDeclaration($inlineCss);
             <?php endif; ?>
 
             <jdoc:include type="modules" name="banner" style="none" />
-
             <jdoc:include type="modules" name="content-top" style="fd_plain" />
-
             <main role="main">
+                <jdoc:include type="message" />
                 <jdoc:include type="component" />
             </main>
 

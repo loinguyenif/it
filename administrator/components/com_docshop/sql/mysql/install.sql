@@ -25,9 +25,10 @@ CREATE TABLE IF NOT EXISTS `#__docshop_documents` (
 
 CREATE TABLE IF NOT EXISTS `#__docshop_orders` (
     `id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `user_id` INT(11) NOT NULL,
+    `user_id` INT(11) NULL DEFAULT NULL,
     `document_id` INT(11) NOT NULL,
     `order_number` VARCHAR(50) UNIQUE,
+    `paypal_payment_id` VARCHAR(100) NULL DEFAULT NULL COMMENT 'PayPal payment ID (PAY-xxx) for idempotency',
     `paypal_transaction_id` VARCHAR(100),
     `amount` DECIMAL(10, 2) NOT NULL,
     `currency` VARCHAR(3) DEFAULT 'USD',
@@ -36,10 +37,10 @@ CREATE TABLE IF NOT EXISTS `#__docshop_orders` (
     `created` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `modified` DATETIME ON UPDATE CURRENT_TIMESTAMP,
     `last_download` DATETIME,
+    UNIQUE KEY `uidx_paypal_payment_id` (`paypal_payment_id`),
     INDEX `user_id` (`user_id`),
     INDEX `document_id` (`document_id`),
     INDEX `status` (`status`),
-    FOREIGN KEY (`user_id`) REFERENCES `#__users`(`id`) ON DELETE CASCADE,
     FOREIGN KEY (`document_id`) REFERENCES `#__docshop_documents`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

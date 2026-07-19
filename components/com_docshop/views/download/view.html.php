@@ -8,68 +8,25 @@
 
 defined('_JEXEC') or die;
 
-// Load the download controller so we can call generateToken()
-require_once JPATH_COMPONENT . '/controllers/download.php';
-
 class DocshopViewDownload extends JViewLegacy
 {
-    protected $order;
-    protected $document;
-    protected $token;
-    protected $expireAt;
+    /** @var int */
+    protected $orderId;
+
+    /** @var string */
+    protected $downloadUrl;
 
     public function display($tpl = null)
     {
-        $app     = JFactory::getApplication();
-        $orderId = $app->input->getInt('id', 0);
+        $app = JFactory::getApplication();
 
-        if (!$orderId) {
-            $orderId = (int) JFactory::getSession()->get('com_docshop.order_id', 0);
-        }
-
-        if (!$orderId) {
-            $app->redirect(
-                JRoute::_('index.php?option=com_docshop&view=documents', false),
-                JText::_('COM_DOCSHOP_DOWNLOAD_NOT_AUTHORIZED'),
-                'error'
-            );
-            return;
-        }
-
-        JModelLegacy::addIncludePath(JPATH_COMPONENT . '/models');
-        $model = JModelLegacy::getInstance('Download', 'DocshopModel');
-
-        $order = $model->getOrder($orderId);
-
-        if (!$order || $order->status !== 'completed') {
-            $app->redirect(
-                JRoute::_('index.php?option=com_docshop&view=documents', false),
-                JText::_('COM_DOCSHOP_DOWNLOAD_NOT_AUTHORIZED'),
-                'error'
-            );
-            return;
-        }
-
-        $document = $model->getDocument($order->document_id);
-
-        if (!$document) {
-            $app->redirect(
-                JRoute::_('index.php?option=com_docshop&view=documents', false),
-                JText::_('COM_DOCSHOP_DOCUMENT_NOT_FOUND'),
-                'error'
-            );
-            return;
-        }
-
-        // Generate a 5-minute signed token for the download link
-        $this->token    = DocshopControllerDownload::generateToken($orderId);
-        $this->expireAt = time() + DocshopControllerDownload::TOKEN_TTL;
-        $this->order    = $order;
-        $this->document = $document;
-
-        // Set page title
-        JFactory::getDocument()->setTitle(JText::_('COM_DOCSHOP_DOWNLOAD_SUCCESS_TITLE'));
+        $this->orderId     = $app->input->getInt('id', 0);
+        $this->downloadUrl = JRoute::_(
+            'index.php?option=com_docshop&task=download.stream&id=' . $this->orderId,
+            false
+        );
 
         parent::display($tpl);
     }
 }
+?>

@@ -10,106 +10,9 @@ defined('_JEXEC') or die;
 
 class DocshopControllerDownload extends JControllerLegacy
 {
-    /** Expiry window in seconds (5 minutes) */
-    const TOKEN_TTL = 300;
-
     /**
-     * Generate a signed download token.
-     * Format: base64( orderId '|' expireAt '|' hmac )
-     */
-    public static function generateToken($orderId)
-    {
-        $secret   = JFactory::getConfig()->get('secret');
-        $expireAt = time() + self::TOKEN_TTL;
-        $payload  = (int) $orderId . '|' . $expireAt;
-        $hmac     = hash_hmac('sha256', $payload, $secret);
-        return base64_encode($payload . '|' . $hmac);
-    }
-
-    /**
-     * Verify token — returns orderId on success, false on failure/expiry.
-     */
-    private function verifyToken($token)
-    {
-        $decoded = base64_decode($token, true);
-        if ($decoded === false) {
-            return false;
-        }
-
-        $parts = explode('|', $decoded);
-        if (count($parts) !== 3) {
-            return false;
-        }
-
-        list($orderId, $expireAt, $hmac) = $parts;
-
-        if (time() > (int) $expireAt) {
-            return false;
-        }
-
-        $secret   = JFactory::getConfig()->get('secret');
-        $payload  = (int) $orderId . '|' . (int) $expireAt;
-        $expected = hash_hmac('sha256', $payload, $secret);
-
-        if (!hash_equals($expected, $hmac)) {
-            return false;
-        }
-
-        return (int) $orderId;
-    }
-
-    /**
-     * secure() — download via signed token (no login required).
-     * URL: index.php?option=com_docshop&task=download.secure&token=XXX
-     */
-    public function secure()
-    {
-        $app   = JFactory::getApplication();
-        $token = $app->input->getString('token', '');
-
-        $orderId = $this->verifyToken($token);
-
-        if ($orderId === false) {
-            $app->redirect(
-                JRoute::_('index.php?option=com_docshop&view=documents', false),
-                JText::_('COM_DOCSHOP_DOWNLOAD_LINK_EXPIRED'),
-                'error'
-            );
-            return;
-        }
-
-        JModelLegacy::addIncludePath(JPATH_COMPONENT . '/models');
-        $model = JModelLegacy::getInstance('Download', 'DocshopModel');
-
-        $order = $model->getOrder($orderId);
-
-        if (!$order || $order->status !== 'completed') {
-            $app->redirect(
-                JRoute::_('index.php?option=com_docshop&view=documents', false),
-                JText::_('COM_DOCSHOP_DOWNLOAD_NOT_AUTHORIZED'),
-                'error'
-            );
-            return;
-        }
-
-        $document = $model->getDocument($order->document_id);
-
-        if (!$document) {
-            throw new \Exception('Document not found.', 404);
-        }
-
-        $filePath = JPATH_SITE . '/media/com_docshop/files/' . $document->file;
-
-        if (!file_exists($filePath)) {
-            throw new \Exception('File not found on server.', 404);
-        }
-
-        $this->streamFile($filePath, $document->title);
-    }
-
-    /**
-     * download() — legacy direct download via order id (no login required).
-     * URL: index.php?option=com_docshop&task=download.download&id=X
+     * Show the "payment successful" page.
+     * JavaScript on the page auto-triggers the actual binary download via stream().
      */
     public function download()
     {
@@ -117,74 +20,141 @@ class DocshopControllerDownload extends JControllerLegacy
         $orderId = $app->input->getInt('id', 0);
 
         if (!$orderId) {
-            $orderId = (int) JFactory::getSession()->get('com_docshop.order_id', 0);
+            $session = JFactory::getSession();
+            $orderId = (int) $session->get('com_docshop.order_id', 0);
         }
 
-        JModelLegacy::addIncludePath(JPATH_COMPONENT . '/models');
-        $model = JModelLegacy::getInstance('Download', 'DocshopModel');
-
-        if (!$model) {
-            throw new \Exception('Could not load download model.', 500);
+        if (!$orderId) {
+            $app->redirect(JRoute::_('index.php?option=com_docshop&view=documents', false), 'Order not found.', 'error');
+            return;
         }
 
+        // Verify the order exists and is paid before showing the success page.
+        $model = $this->getModel('download', 'DocshopModel');
         $order = $model->getOrder($orderId);
 
         if (!$order || $order->status !== 'completed') {
-            $app->redirect(
-                JRoute::_('index.php?option=com_docshop&view=documents', false),
-                JText::_('COM_DOCSHOP_DOWNLOAD_NOT_AUTHORIZED'),
-                'error'
-            );
+            $app->redirect(JRoute::_('index.php?option=com_docshop&view=documents', false), 'Order not completed.', 'error');
             return;
+        }
+
+        // Render the success page; JS on that page triggers stream().
+        $view = $this->getView('download', 'html');
+        $view->setModel($model, true);
+        $view->display();
+    }
+
+    /**
+     * Stream the actual binary file — called directly via task=download.stream.
+     * Must bypass the entire Joomla render pipeline and send raw binary output.
+     */
+    public function stream()
+    {
+        // Close ALL output buffers immediately — before Joomla can write anything.
+        // This must be the very first thing we do so headers are not yet sent.
+        while (ob_get_level() > 0) {
+            ob_end_clean();
+        }
+        @ini_set('zlib.output_compression', 'Off');
+        @apache_setenv('no-gzip', 1);
+
+        $app     = JFactory::getApplication();
+        $orderId = $app->input->getInt('id', 0);
+
+        if (!$orderId) {
+            $session = JFactory::getSession();
+            $orderId = (int) $session->get('com_docshop.order_id', 0);
+        }
+
+        if (!$orderId) {
+            http_response_code(400);
+            exit('Order ID missing.');
+        }
+
+        $model = $this->getModel('download', 'DocshopModel');
+        $order = $model->getOrder($orderId);
+
+        if (!$order || $order->status !== 'completed') {
+            http_response_code(403);
+            exit('Order not found or not completed.');
         }
 
         $document = $model->getDocument($order->document_id);
 
         if (!$document) {
-            throw new \Exception('Document not found.', 404);
+            http_response_code(404);
+            exit('Document not found.');
         }
 
-        $filePath = JPATH_SITE . '/media/com_docshop/files/' . $document->file;
+        $filePath = JPATH_SITE . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR
+                  . 'com_docshop' . DIRECTORY_SEPARATOR . 'files' . DIRECTORY_SEPARATOR
+                  . $document->file;
 
         if (!file_exists($filePath)) {
-            throw new \Exception('File not found on server.', 404);
+            http_response_code(404);
+            exit('File not found on server.');
         }
 
+        // Clear session fallback and record download time.
         JFactory::getSession()->clear('com_docshop.order_id');
+        $model->markDownloaded($orderId);
 
+        // Send binary file directly — no Joomla template involved.
         $this->streamFile($filePath, $document->title);
     }
 
     private function streamFile($filePath, $fileName)
     {
-        $ext   = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
-        $types = array(
+        $ext      = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+        $fileSize = filesize($filePath);
+
+        $contentTypes = array(
             'pdf'  => 'application/pdf',
             'doc'  => 'application/msword',
             'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
             'xls'  => 'application/vnd.ms-excel',
             'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'ppt'  => 'application/vnd.ms-powerpoint',
-            'pptx' => 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
             'zip'  => 'application/zip',
-            'rar'  => 'application/x-rar-compressed',
-            '7z'   => 'application/x-7z-compressed',
         );
 
-        $contentType = isset($types[$ext]) ? $types[$ext] : 'application/octet-stream';
+        $contentType = isset($contentTypes[$ext]) ? $contentTypes[$ext] : 'application/octet-stream';
 
-        while (ob_get_level()) {
+        // Flush and close every output buffer opened by Joomla / PHP so that
+        // our binary headers are the very first bytes sent to the browser.
+        while (ob_get_level() > 0) {
             ob_end_clean();
         }
 
+        // Prevent Joomla from appending any template HTML after we exit.
+        @apache_setenv('no-gzip', 1);
+        @ini_set('zlib.output_compression', 'Off');
+
+        // Safe filename: strip characters that break Content-Disposition on
+        // some browsers (quotes, backslashes, control chars).
+        $safeFileName = preg_replace('/["\\\\\x00-\x1f]/', '', $fileName);
+
         header('Content-Type: ' . $contentType);
-        header('Content-Disposition: attachment; filename="' . addslashes($fileName) . '.' . $ext . '"');
-        header('Content-Length: ' . filesize($filePath));
+        header('Content-Disposition: attachment; filename="' . $safeFileName . '.' . $ext . '"');
+        header('Content-Length: ' . $fileSize);
+        header('Content-Transfer-Encoding: binary');
         header('Pragma: no-cache');
         header('Cache-Control: no-cache, no-store, must-revalidate');
         header('Expires: 0');
 
-        readfile($filePath);
-        jexit();
+        // Stream in chunks to support large files without hitting memory limits.
+        $handle = fopen($filePath, 'rb');
+        if ($handle === false) {
+            http_response_code(500);
+            exit('Could not open file for reading.');
+        }
+
+        while (!feof($handle)) {
+            echo fread($handle, 1048576); // 1 MB chunks
+            flush();
+        }
+
+        fclose($handle);
+        exit;
     }
 }
+?>

@@ -24,6 +24,9 @@ class DocshopRouter extends JComponentRouterBase
             unset($query['id']);
         }
 
+        // Keep layout and other params in the query string — do not consume them
+        // so Joomla appends them as ?layout=success etc.
+
         return $segments;
     }
 

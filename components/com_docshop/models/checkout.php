@@ -31,6 +31,28 @@ class DocshopModelCheckout extends JModelLegacy
         return $db->loadObject();
     }
 
+    /**
+     * Look up an existing completed order by PayPal payment ID.
+     * Returns a stdClass order object or null if not found.
+     */
+    public function getOrderByPaymentId($paymentId)
+    {
+        if (empty($paymentId)) {
+            return null;
+        }
+
+        $db    = $this->getDbo();
+        $query = $db->getQuery(true)
+            ->select('*')
+            ->from($db->quoteName('#__docshop_orders'))
+            ->where($db->quoteName('paypal_payment_id') . ' = ' . $db->quote((string) $paymentId))
+            ->where($db->quoteName('status') . ' = ' . $db->quote('completed'));
+
+        $db->setQuery($query);
+
+        return $db->loadObject() ?: null;
+    }
+
     public function createOrder($documentId, $payment, $currency)
     {
         $user = JFactory::getUser();
@@ -57,23 +79,32 @@ class DocshopModelCheckout extends JModelLegacy
             }
         }
 
+        $paypalPaymentId = (string) $payment->getId();
+
+        // ---- Idempotency: return existing order if this payment was already processed ----
+        $existing = $this->getOrderByPaymentId($paypalPaymentId);
+        if ($existing) {
+            return $existing;
+        }
+
         // ---- Build INSERT using individual bindings for correct typing ----
         $orderNumber = 'ORD-' . strtoupper(substr(md5(uniqid(mt_rand(), true)), 0, 10));
 
-        // user_id = 0 when guest checkout — allowed
-        $userId = JFactory::getUser()->id;
+        // user_id = NULL for guest, actual id for logged-in users
+        $userId = JFactory::getUser()->id ?: null;
 
         $query = $db->getQuery(true)
             ->insert($db->quoteName('#__docshop_orders'))
             ->columns($db->quoteName(array(
                 'user_id', 'document_id', 'order_number',
-                'paypal_transaction_id', 'amount', 'currency',
+                'paypal_payment_id', 'paypal_transaction_id', 'amount', 'currency',
                 'status', 'payment_method', 'created',
             )))
             ->values(implode(',', array(
-                (int)    $userId,
+                $userId === null ? 'NULL' : (int) $userId,
                 (int)    $documentId,
                 $db->quote($orderNumber),
+                $db->quote($paypalPaymentId),
                 $db->quote($paypalTransactionId),
                 $db->quote((string) $total),
                 $db->quote((string) $currency),
@@ -96,12 +127,13 @@ class DocshopModelCheckout extends JModelLegacy
             throw new Exception('Order INSERT succeeded but returned no ID.');
         }
 
-        $order                = new \stdClass();
-        $order->id            = $orderId;
-        $order->order_number  = $orderNumber;
-        $order->status        = 'completed';
-        $order->amount        = $total;
-        $order->currency      = $currency;
+        $order                       = new \stdClass();
+        $order->id                   = $orderId;
+        $order->order_number         = $orderNumber;
+        $order->status               = 'completed';
+        $order->amount               = $total;
+        $order->currency             = $currency;
+        $order->paypal_payment_id    = $paypalPaymentId;
 
         return $order;
     }

@@ -34,5 +34,20 @@ class DocshopModelDownload extends JModelLegacy
         $db->setQuery($query);
         return $db->loadObject();
     }
+
+    /**
+     * Record the time the order file was last downloaded.
+     */
+    public function markDownloaded($orderId)
+    {
+        $db    = $this->getDbo();
+        $query = $db->getQuery(true)
+            ->update($db->quoteName('#__docshop_orders'))
+            ->set($db->quoteName('last_download') . ' = ' . $db->quote(JFactory::getDate()->toSql()))
+            ->where($db->quoteName('id') . ' = ' . (int) $orderId);
+
+        $db->setQuery($query);
+        $db->execute();
+    }
 }
 ?>
