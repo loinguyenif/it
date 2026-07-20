@@ -83,7 +83,9 @@ class DocshopControllerCheckout extends JControllerLegacy
             $payment->create($apiContext);
             $approvalLink = $payment->getApprovalLink();
             $app->redirect($approvalLink);
-        } catch (\PayPal\Exception\PPConnectionException $ex) {
+        } catch (\PayPal\Exception\PayPalConnectionException $ex) {
+            $app->redirect(JRoute::_('index.php?option=com_docshop&view=documents', false), 'Payment error: ' . $ex->getMessage(), 'error');
+        } catch (Exception $ex) {
             $app->redirect(JRoute::_('index.php?option=com_docshop&view=documents', false), 'Payment error: ' . $ex->getMessage(), 'error');
         }
     }
@@ -174,12 +176,12 @@ class DocshopControllerCheckout extends JControllerLegacy
 
     private function getReturnUrl($documentId)
     {
-        return JRoute::_('index.php?option=com_docshop&task=checkout.confirm&document_id=' . $documentId, false, -1);
+        return JRoute::_('index.php?option=com_docshop&task=checkout.confirm&document_id=' . $documentId, false, 0, true);
     }
 
     private function getCancelUrl()
     {
-        return JRoute::_('index.php?option=com_docshop&view=documents', false, -1);
+        return JRoute::_('index.php?option=com_docshop&view=documents', false, 0, true);
     }
 }
 ?>
